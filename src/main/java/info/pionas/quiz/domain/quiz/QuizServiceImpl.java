@@ -1,7 +1,5 @@
-package info.pionas.quiz.infrastructure.quiz;
+package info.pionas.quiz.domain.quiz;
 
-import info.pionas.quiz.domain.quiz.QuizMapper;
-import info.pionas.quiz.domain.quiz.QuizService;
 import info.pionas.quiz.domain.quiz.api.NewQuestion;
 import info.pionas.quiz.domain.quiz.api.NewQuiz;
 import info.pionas.quiz.domain.quiz.api.Quiz;

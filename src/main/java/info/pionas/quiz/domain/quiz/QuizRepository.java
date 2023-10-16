@@ -1,4 +1,4 @@
-package info.pionas.quiz.infrastructure.quiz;
+package info.pionas.quiz.domain.quiz;
 
 import info.pionas.quiz.domain.quiz.api.Quiz;
 
