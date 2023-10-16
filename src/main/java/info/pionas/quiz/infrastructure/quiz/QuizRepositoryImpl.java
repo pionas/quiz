@@ -4,8 +4,7 @@ import info.pionas.quiz.domain.quiz.api.Quiz;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @AllArgsConstructor
@@ -17,5 +16,12 @@ class QuizRepositoryImpl implements QuizRepository {
     public Quiz addQuiz(Quiz quiz) {
         quizzes.add(quiz);
         return quiz;
+    }
+
+    @Override
+    public Optional<Quiz> findById(UUID uuid) {
+        return quizzes.stream()
+                .filter(quiz -> Objects.equals(quiz.getId(), uuid))
+                .findAny();
     }
 }

@@ -23,6 +23,11 @@ public class QuizMapperImpl implements QuizMapper {
                 .build();
     }
 
+    @Override
+    public Question map(NewQuestion question, UuidGenerator uuidGenerator) {
+        return getQuestion(question, uuidGenerator);
+    }
+
     private List<Question> getQuestions(List<NewQuestion> questions, UuidGenerator uuidGenerator) {
         return Optional.ofNullable(questions)
                 .stream()
