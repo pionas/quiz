@@ -34,4 +34,14 @@ class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new QuizNotFoundException(quizId));
     }
 
+    @Override
+    public Quiz removeQuestionFromQuiz(UUID quizId, UUID questionId) {
+        return quizRepository.findById(quizId)
+                .map(quiz -> {
+                    quiz.removeQuestion(questionId);
+                    return quiz;
+                })
+                .orElseThrow(() -> new QuizNotFoundException(quizId));
+    }
+
 }

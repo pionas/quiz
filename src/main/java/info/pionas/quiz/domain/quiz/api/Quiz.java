@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -20,5 +20,13 @@ public class Quiz {
 
     public void addQuestion(Question question) {
         questions.add(question);
+    }
+
+    public void removeQuestion(UUID questionId) {
+        questions.removeIf(question -> isEquals(questionId, question));
+    }
+
+    private static boolean isEquals(UUID questionId, Question question) {
+        return Objects.equals(question.getId(), questionId);
     }
 }

@@ -11,4 +11,6 @@ public interface QuizService {
     Quiz createQuiz(NewQuiz quiz);
 
     Quiz addQuestionToQuiz(UUID quizId, NewQuestion question);
+
+    Quiz removeQuestionFromQuiz(UUID quizId, UUID questionId);
 }
