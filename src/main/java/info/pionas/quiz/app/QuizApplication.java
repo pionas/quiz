@@ -1,9 +1,9 @@
-package info.pionas.quiz;
+package info.pionas.quiz.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "info.pionas.quiz")
 public class QuizApplication {
 
     public static void main(String[] args) {
