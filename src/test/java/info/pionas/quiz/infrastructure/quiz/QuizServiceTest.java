@@ -4,21 +4,30 @@ import info.pionas.quiz.domain.quiz.QuizMapper;
 import info.pionas.quiz.domain.quiz.QuizService;
 import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class QuizServiceTest {
 
+    private final QuizRepository quizRepository = Mockito.mock(QuizRepository.class);
     private final UuidGenerator uuidGenerator = Mockito.mock(UuidGenerator.class);
     private final QuizMapper quizMapper = new QuizMapperImpl();
 
-    private final QuizService service = new QuizServiceImpl(uuidGenerator, quizMapper);
+    private final QuizService service = new QuizServiceImpl(quizRepository, uuidGenerator, quizMapper);
+
+    @BeforeEach
+    void setUp() {
+        when(quizRepository.addQuiz(any(Quiz.class))).thenAnswer((InvocationOnMock invocationOnMock) -> invocationOnMock.getArguments()[0]);
+    }
 
     @Test
     void should_create_quiz() {

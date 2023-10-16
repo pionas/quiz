@@ -16,12 +16,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 class QuizServiceImpl implements QuizService {
 
+    private final QuizRepository quizRepository;
     private final UuidGenerator uuidGenerator;
     private final QuizMapper mapper;
 
     @Override
     public Quiz createQuiz(NewQuiz quiz) {
-        return mapper.map(quiz, uuidGenerator);
+        return quizRepository.addQuiz(mapper.map(quiz, uuidGenerator));
     }
 
 }
