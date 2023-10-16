@@ -1,5 +1,6 @@
 package info.pionas.quiz.infrastructure.quiz;
 
+import info.pionas.quiz.domain.quiz.QuizMapper;
 import info.pionas.quiz.domain.quiz.QuizService;
 import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
@@ -12,11 +13,12 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class QuizServiceTest {
+class QuizServiceTest {
 
     private final UuidGenerator uuidGenerator = Mockito.mock(UuidGenerator.class);
+    private final QuizMapper quizMapper = new QuizMapperImpl();
 
-    private final QuizService service = new QuizServiceImpl(uuidGenerator);
+    private final QuizService service = new QuizServiceImpl(uuidGenerator, quizMapper);
 
     @Test
     void should_create_quiz() {
@@ -49,7 +51,7 @@ public class QuizServiceTest {
         assertThat(answer1.isCorrect()).isTrue();
         final var answer2 = answers.get(1);
         assertThat(answer2).isNotNull();
-        assertThat(answer2.getId()).isEqualTo(answer1Id);
+        assertThat(answer2.getId()).isEqualTo(answer2Id);
         assertThat(answer2.getContent()).isEqualTo("No");
         assertThat(answer2.isCorrect()).isFalse();
     }
