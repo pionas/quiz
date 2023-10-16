@@ -1,27 +1,27 @@
 package info.pionas.quiz.domain.quiz;
 
 import info.pionas.quiz.domain.quiz.api.Quiz;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 class QuizRepositoryImpl implements QuizRepository {
 
-    private final List<Quiz> quizzes = Collections.emptyList();
+    private final QuizJpaRepository quizJpaRepository;
+    private final QuizJpaMapper quizJpaMapper;
 
     @Override
     public Quiz save(Quiz quiz) {
-        quizzes.add(quiz);
-        return quiz;
+        return quizJpaMapper.map(quizJpaRepository.save(quizJpaMapper.map(quiz)));
     }
 
     @Override
     public Optional<Quiz> findById(UUID uuid) {
-        return quizzes.stream()
-                .filter(quiz -> Objects.equals(quiz.getId(), uuid))
-                .findAny();
+        return quizJpaRepository.findById(uuid)
+                .map(quizJpaMapper::map);
     }
 }
