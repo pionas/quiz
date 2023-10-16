@@ -13,7 +13,7 @@ class QuizRepositoryImpl implements QuizRepository {
     private final List<Quiz> quizzes = Collections.emptyList();
 
     @Override
-    public Quiz addQuiz(Quiz quiz) {
+    public Quiz save(Quiz quiz) {
         quizzes.add(quiz);
         return quiz;
     }

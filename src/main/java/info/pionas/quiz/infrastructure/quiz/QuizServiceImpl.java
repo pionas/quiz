@@ -21,7 +21,7 @@ class QuizServiceImpl implements QuizService {
 
     @Override
     public Quiz createQuiz(NewQuiz quiz) {
-        return quizRepository.addQuiz(mapper.map(quiz, uuidGenerator));
+        return quizRepository.save(mapper.map(quiz, uuidGenerator));
     }
 
     @Override
@@ -30,7 +30,7 @@ class QuizServiceImpl implements QuizService {
                 .map(quiz -> {
                     quiz.addQuestion(mapper.map(question, uuidGenerator));
                     return quiz;
-                })
+                }).map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));
     }
 
@@ -40,7 +40,7 @@ class QuizServiceImpl implements QuizService {
                 .map(quiz -> {
                     quiz.removeQuestion(questionId);
                     return quiz;
-                })
+                }).map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));
     }
 

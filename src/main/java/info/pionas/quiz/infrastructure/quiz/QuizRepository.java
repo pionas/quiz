@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface QuizRepository {
 
-    Quiz addQuiz(Quiz quiz);
+    Quiz save(Quiz quiz);
 
     Optional<Quiz> findById(UUID uuid);
 }

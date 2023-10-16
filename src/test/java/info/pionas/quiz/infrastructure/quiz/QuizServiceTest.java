@@ -26,7 +26,7 @@ class QuizServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(quizRepository.addQuiz(any(Quiz.class))).thenAnswer((InvocationOnMock invocationOnMock) -> invocationOnMock.getArguments()[0]);
+        when(quizRepository.save(any(Quiz.class))).thenAnswer((InvocationOnMock invocationOnMock) -> invocationOnMock.getArguments()[0]);
     }
 
     @Test
@@ -135,7 +135,6 @@ class QuizServiceTest {
         assertThat(quiz.getTitle()).isEqualTo("Title");
         assertThat(quiz.getDescription()).isEqualTo("Description");
         List<Question> questions = quiz.getQuestions();
-        assertThat(questions).isNotEmpty();
         assertThat(questions).hasSize(1);
         final var question = questions.get(0);
         assertThat(question).isNotNull();
