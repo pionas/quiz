@@ -1,4 +1,4 @@
-package info.pionas.quiz;
+package info.pionas.quiz.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
