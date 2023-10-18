@@ -1,17 +1,25 @@
 package info.pionas.quiz.domain.quiz;
 
+import info.pionas.quiz.domain.quiz.api.Answer;
+import info.pionas.quiz.domain.quiz.api.Question;
 import info.pionas.quiz.domain.quiz.api.Quiz;
+import info.pionas.quiz.infrastructure.database.quiz.AnswerEntity;
+import info.pionas.quiz.infrastructure.database.quiz.QuestionEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuizEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-class QuizJpaMapper {
+@Mapper(componentModel = "spring")
+interface QuizJpaMapper {
 
-    public Quiz map(QuizEntity quizEntity) {
-        return null;
-    }
+    Quiz map(QuizEntity quizEntity);
 
-    public QuizEntity map(Quiz quiz) {
-        return null;
-    }
+    QuizEntity map(Quiz quiz);
+
+    Question map(QuestionEntity questionEntity);
+
+    QuestionEntity map(Question question);
+
+    Answer map(AnswerEntity answerEntity);
+
+    QuizEntity map(Answer answer);
 }

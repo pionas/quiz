@@ -4,7 +4,7 @@ databaseChangeLog:
       author: Adrian Pionka
       changes:
         - createTable:
-            tableName: quiz
+            tableName: quizes
             columns:
               - column:
                   name: id
