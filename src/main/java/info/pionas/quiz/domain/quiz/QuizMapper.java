@@ -1,14 +1,27 @@
 package info.pionas.quiz.domain.quiz;
 
-import info.pionas.quiz.domain.quiz.api.NewQuestion;
-import info.pionas.quiz.domain.quiz.api.NewQuiz;
-import info.pionas.quiz.domain.quiz.api.Question;
-import info.pionas.quiz.domain.quiz.api.Quiz;
+import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
+import org.mapstruct.Context;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public interface QuizMapper {
+import java.util.List;
 
-    Quiz map(NewQuiz quiz, UuidGenerator uuidGenerator);
+@Mapper
+interface QuizMapper {
 
-    Question map(NewQuestion question, UuidGenerator uuidGenerator);
+    @Mapping(target = "id", expression = "java(uuidGenerator.generate())")
+    Quiz mapToQuiz(NewQuiz quiz, @Context UuidGenerator uuidGenerator);
+
+//    List<Question> mapToQuestions(List<NewQuestion> newQuestions, @Context UuidGenerator uuidGenerator);
+
+    @Mapping(target = "id", expression = "java(uuidGenerator.generate())")
+    Question mapToQuestion(NewQuestion question, @Context UuidGenerator uuidGenerator);
+
+//    List<Answer> mapToAnswers(List<NewAnswer> newAnswers, @Context UuidGenerator uuidGenerator);
+
+    @Mapping(target = "id", expression = "java(uuidGenerator.generate())")
+    Answer mapToAnswer(NewAnswer answer, @Context UuidGenerator uuidGenerator);
+
 }

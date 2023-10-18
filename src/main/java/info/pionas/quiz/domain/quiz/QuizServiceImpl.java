@@ -19,14 +19,14 @@ class QuizServiceImpl implements QuizService {
 
     @Override
     public Quiz createQuiz(NewQuiz quiz) {
-        return quizRepository.save(mapper.map(quiz, uuidGenerator));
+        return quizRepository.save(mapper.mapToQuiz(quiz, uuidGenerator));
     }
 
     @Override
     public Quiz addQuestionToQuiz(UUID quizId, NewQuestion question) {
         return quizRepository.findById(quizId)
                 .map(quiz -> {
-                    quiz.addQuestion(mapper.map(question, uuidGenerator));
+                    quiz.addQuestion(mapper.mapToQuestion(question, uuidGenerator));
                     return quiz;
                 }).map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));

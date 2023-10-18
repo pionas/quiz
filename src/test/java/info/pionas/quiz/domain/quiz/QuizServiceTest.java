@@ -34,7 +34,7 @@ class QuizServiceTest {
         final var questionId = UUID.fromString("435aeee2-5a1f-4723-9359-1137ed820ae7");
         final var answer1Id = UUID.fromString("d7e876ae-364d-403e-b537-7bcb2c2841fa");
         final var answer2Id = UUID.fromString("45d074e4-7c03-4c8b-9f8a-23ba1e367bce");
-        when(uuidGenerator.generate()).thenReturn(quizId, questionId, answer1Id, answer2Id);
+        when(uuidGenerator.generate()).thenReturn(answer1Id, answer2Id, questionId, quizId);
         final var newQuiz = new NewQuiz("Title", "Description", List.of(new NewQuestion("Spring is the best JAVA framework", List.of(new NewAnswer("Yes", true), new NewAnswer("No", false)))));
         //when
         final var quiz = service.createQuiz(newQuiz);
@@ -71,7 +71,7 @@ class QuizServiceTest {
         final var answer1Id = UUID.fromString("d7e876ae-364d-403e-b537-7bcb2c2841fa");
         final var answer2Id = UUID.fromString("45d074e4-7c03-4c8b-9f8a-23ba1e367bce");
         final var newQuestion = new NewQuestion("Spring is the best JAVA framework", List.of(new NewAnswer("Yes", true), new NewAnswer("No", false)));
-        when(uuidGenerator.generate()).thenReturn(questionId, answer1Id, answer2Id);
+        when(uuidGenerator.generate()).thenReturn(answer1Id, answer2Id, questionId);
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(getQuiz(quizId)));
         //when
         Quiz quiz = service.addQuestionToQuiz(quizId, newQuestion);
@@ -102,7 +102,7 @@ class QuizServiceTest {
     }
 
     @Test
-    void should_throw_not_found_expcetion_when_quiz_by_id_not_exist() {
+    void should_throw_not_found_exception_when_quiz_by_id_not_exist() {
         //given
         final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
         final var newQuestion = new NewQuestion("Spring is the best JAVA framework", Collections.emptyList());
@@ -153,7 +153,7 @@ class QuizServiceTest {
     }
 
     @Test
-    void should_throw_not_found_expcetion_when_try_remove_question_and_quiz_by_id_not_exist() {
+    void should_throw_not_found_exception_when_try_remove_question_and_quiz_by_id_not_exist() {
         //given
         final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
         final var questionId = UUID.fromString("435aeee2-5a1f-4723-9359-1137ed820ae7");
