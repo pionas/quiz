@@ -3,9 +3,13 @@ package info.pionas.quiz.api.quiz;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Builder
 class NewAnswerDto {
 
     @NotBlank
