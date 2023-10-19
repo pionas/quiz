@@ -5,9 +5,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("api/v1/quiz")
+@RequestMapping("quiz")
 @RequiredArgsConstructor
 class QuizRestController {
 
@@ -16,8 +17,8 @@ class QuizRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    QuizDto create(@Valid @RequestBody NewQuizDto quizDto) {
-        return quizApiMapper.map(quizService.createQuiz(quizApiMapper.map(quizDto)));
+    Mono<QuizDto> create(@Valid @RequestBody NewQuizDto quizDto) {
+        return Mono.just(quizApiMapper.map(quizService.createQuiz(quizApiMapper.map(quizDto))));
     }
 
 }

@@ -9,9 +9,10 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
         "spring.profiles.active=it",
-        "server.port=50000"
+        "server.port=50000",
+        "spring.web.locale=en_US",
+        "server.shutdown=graceful"
 })
-
 @Import({DbITConfiguration.class, RestITConfiguration.class})
 public class AbstractIT {
 
