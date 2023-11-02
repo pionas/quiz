@@ -9,5 +9,5 @@ class AnswerDto {
 
     private UUID id;
     private String content;
-    private boolean correct;
+    private Boolean correct;
 }
