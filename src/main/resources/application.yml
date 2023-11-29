@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+password:
+  encoder:
+    secret: mysecret
+    iteration: 33
+    keylength: 256
+jwt:
+  secret: ThisIsSecretForJWTHS512SignatureAlgorithmThatMUSTHave64ByteLength
+  expiration: 28800

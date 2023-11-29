@@ -1,0 +1,126 @@
+name: "Release"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+    name: Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.TOKEN }}
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Test with Gradle
+        run: ./gradlew test
+
+  generate-jar:
+    if: ${{ github.event_name == 'push' }}
+    needs: build-and-test
+    name: Generate Jar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN }}
+      - name: Read Application Config
+        run: |
+          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.TOKEN }}
+      - name: Create tag
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              ref: "refs/tags/${{ env.APP_VERSION }}",
+            })
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build PROD with Gradle
+        run: ./gradlew clean build -x test -Pvaadin.productionMode
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: |
+            build/libs/quiz-${{ env.APP_VERSION }}.jar
+            src/main/resources/application.yaml
+  deploy:
+    if: ${{ github.event_name == 'push' }}
+    needs: generate-jar
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.TOKEN }}
+      - name: Download package
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
+      - name: Read Application Config
+        run: |
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+      - name: Copy jar file to project root dir
+        run: cp ./build/libs/quiz-${{ env.APP_VERSION }}.jar ./quiz-${{ env.APP_VERSION }}.jar
+      - name: Deploy file via ssh password
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "quiz-${{ env.APP_VERSION }}.jar"
+          target: www/quiz
+      - name: run app
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: kill -9 $(pgrep -f 'quiz') & screen -d -m -S quiz java -jar ./www/quiz/quiz-${{ env.APP_VERSION }}.jar --server.port=${{ secrets.APP_PORT }}
+
+  remove-artifact:
+    if: ${{ github.event_name == 'push' }}
+    needs: deploy
+    name: Remove local artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove local artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: artifact
