@@ -15,3 +15,9 @@ password:
 jwt:
   secret: ThisIsSecretForJWTHS512SignatureAlgorithmThatMUSTHave64ByteLength
   expiration: 28800
+
+info:
+  app:
+    name: Quiz
+    description: This is my first spring boot application
+    version: 1.0.0
