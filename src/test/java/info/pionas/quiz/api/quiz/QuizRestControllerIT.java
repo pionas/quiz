@@ -1,30 +1,52 @@
 package info.pionas.quiz.api.quiz;
 
 import info.pionas.quiz.api.AbstractIT;
+import info.pionas.quiz.domain.user.api.Role;
+import info.pionas.quiz.domain.user.api.User;
 import info.pionas.quiz.infrastructure.database.quiz.QuizEntity;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 class QuizRestControllerIT extends AbstractIT {
 
     @Test
+    void should_throw_unauthorized_when_try_to_create_quiz_by_quest() throws IOException {
+        //given
+        //when
+        final var response = webTestClient.post().uri("/api/v1/quiz")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getResponseBodyContent()).isEmpty();
+    }
+
+    @Test
     void should_create_quiz() {
         //given
+        final var user = new User("user", "user", List.of(Role.ROLE_USER));
         final var newQuizDto = getNewQuizDto();
         //when
-        final var response = apiRestClient.postForEntity("/quiz", newQuizDto, QuizDto.class);
+        final var response = webTestClient.post().uri("/api/v1/quiz")
+                .body(BodyInserters.fromValue(newQuizDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(QuizDto.class);
         //then
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        QuizDto quizDto = response.getBody();
+        QuizDto quizDto = response.getResponseBody().blockLast();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
         assertThat(quizDto).isNotNull();
         assertThat(quizDto.getTitle()).isEqualTo(newQuizDto.getTitle());
         assertThat(quizDto.getDescription()).isEqualTo(newQuizDto.getDescription());
@@ -34,20 +56,24 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(quizEntity).isNotNull();
         assertThat(quizEntity.getTitle()).isEqualTo(newQuizDto.getTitle());
         assertThat(quizEntity.getDescription()).isEqualTo(newQuizDto.getDescription());
-
     }
 
     @Test
     void should_throw_bad_request_when_try_to_create_quiz() throws IOException {
         //given
+        final var user = new User("user", "user", List.of(Role.ROLE_USER));
         final var newQuizDto = NewQuizDto.builder().build();
         //when
-        final var exception = catchThrowableOfType(() -> apiRestClient.postForEntity("/quiz", newQuizDto, QuizDto.class), HttpClientErrorException.class);
+        final var response = webTestClient.post().uri("/api/v1/quiz")
+                .body(BodyInserters.fromValue(newQuizDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
         //then
-        assertThat(exception).isNotNull();
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(exception.getResponseBodyAsByteArray()).isNotNull();
-        final var errorJson = objectMapper.readTree(exception.getResponseBodyAsByteArray());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
