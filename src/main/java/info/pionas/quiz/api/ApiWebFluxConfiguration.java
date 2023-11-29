@@ -9,10 +9,8 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @Configuration(proxyBeanMethods = false)
 class ApiWebFluxConfiguration implements WebFluxConfigurer {
 
-    private static final String API_CONTEXT = "/api/v1";
-
     @Override
     public void configurePathMatching(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix(API_CONTEXT, HandlerTypePredicate.forAnnotation(RestController.class));
+        configurer.addPathPrefix(ApiConfiguration.API_CONTEXT, HandlerTypePredicate.forAnnotation(RestController.class));
     }
 }
