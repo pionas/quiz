@@ -70,10 +70,13 @@ dependencies {
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
-    jacocoTestReport()
 }
 
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     dependsOn test
+}
+
+test {
+    finalizedBy jacocoTestReport
 }
