@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.1.4'
     id 'io.spring.dependency-management' version '1.1.3'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'jacoco'
 }
 
 group = 'info.pionas'
@@ -26,6 +27,20 @@ repositories {
 ext {
     set('snippetsDir', file("build/generated-snippets"))
 }
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = true
+        html.required = true
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
 def mapstructVersion = '1.5.5.Final'
 
 def jwtVersion = '0.12.3'
@@ -55,6 +70,7 @@ dependencies {
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
+    jacocoTestReport()
 }
 
 tasks.named('asciidoctor') {
