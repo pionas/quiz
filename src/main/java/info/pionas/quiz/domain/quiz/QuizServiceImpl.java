@@ -35,6 +35,7 @@ class QuizServiceImpl implements QuizService {
     }
 
     @Override
+    @Transactional
     public Quiz removeQuestionFromQuiz(UUID quizId, UUID questionId) {
         return quizRepository.findById(quizId)
                 .map(quiz -> {

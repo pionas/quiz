@@ -1,4 +1,4 @@
- package info.pionas.quiz.api.quiz;
+package info.pionas.quiz.api.quiz;
 
 import info.pionas.quiz.api.AbstractIT;
 import info.pionas.quiz.domain.user.api.Role;
@@ -107,7 +107,7 @@ class QuizRestControllerIT extends AbstractIT {
     void should_throw_unauthorized_when_try_to_add_question_to_quiz_by_quest() {
         //given
         //when
-        final var response = webTestClient.post().uri("/api/v1/quiz/f57342a1-8413-4d45-8465-6b41b8d72d3e/answer")
+        final var response = webTestClient.post().uri("/api/v1/quiz/f57342a1-8413-4d45-8465-6b41b8d72d3e/question")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .returnResult(HttpClientErrorException.class);
@@ -123,7 +123,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
         final var newQuestionDto = createQuestion("Spring is the best JAVA framework");
         //when
-        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/answer")
+        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
                 .body(BodyInserters.fromValue(newQuestionDto))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
@@ -162,7 +162,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var user = new User("user", "user", List.of(Role.ROLE_USER));
         final var newQuestionDto = createQuestion("Spring is the best JAVA framework");
         //when
-        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/answer")
+        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
                 .body(BodyInserters.fromValue(newQuestionDto))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
@@ -185,7 +185,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var user = new User("user", "user", List.of(Role.ROLE_USER));
         final var newQuestionDto = new NewQuestionDto();
         //when
-        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/answer")
+        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
                 .body(BodyInserters.fromValue(newQuestionDto))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
@@ -207,8 +207,84 @@ class QuizRestControllerIT extends AbstractIT {
         final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
         final var newQuestionDto = createQuestion("Spring is the best JAVA framework");
         //when
-        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/answer")
+        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
                 .body(BodyInserters.fromValue(newQuestionDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        final var errors = StreamSupport
+                .stream(errorJson.get("errors").spliterator(), false)
+                .toList();
+        assertThat(errors.get(0).asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
+    }
+
+    @Test
+    void should_throw_unauthorized_when_try_to_delete_question_from_quiz_by_quest() {
+        //given
+        //when
+        final var response = webTestClient.delete().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question/ce703f5b-274c-4398-b855-d461887c7ed5")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getResponseBodyContent()).isEmpty();
+    }
+
+    @Test
+    @Sql({"/db/quiz.sql", "/db/question.sql"})
+    void should_delete_question_from_quiz() {
+        //given
+        final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
+        //when
+        final var response = webTestClient.delete().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question/ce703f5b-274c-4398-b855-d461887c7ed5")
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(QuizResponseDto.class);
+        //then
+        QuizResponseDto quizResponseDto = response.getResponseBody().blockLast();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
+        assertThat(quizResponseDto).isNotNull();
+        assertThat(quizResponseDto.getTitle()).isEqualTo("First question");
+        assertThat(quizResponseDto.getDescription()).isEqualTo("This is first question without answers");
+        final var questions = quizResponseDto.getQuestions();
+        assertThat(questions).isEmpty();
+    }
+
+    @Test
+    void should_throw_forbidden_when_try_to_delete_question_from_quiz() throws IOException {
+        //given
+        final var user = new User("user", "user", List.of(Role.ROLE_USER));
+        //when
+        final var response = webTestClient.delete().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question/ce703f5b-274c-4398-b855-d461887c7ed5")
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        final var errors = StreamSupport
+                .stream(errorJson.get("errors").spliterator(), false)
+                .toList();
+        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
+    }
+
+    @Test
+    void should_throw_not_found_when_try_delete_question_but_quiz_by_id_not_exist() throws IOException {
+        //given
+        final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
+        //when
+        final var response = webTestClient.delete().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question/ce703f5b-274c-4398-b855-d461887c7ed5")
+                .accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
                 .exchange()

@@ -25,11 +25,18 @@ class QuizRestController {
         return Mono.just(quizApiMapper.map(quizService.createQuiz(quizApiMapper.map(quizDto))));
     }
 
-    @PostMapping("{quizId}/answer")
+    @PostMapping("{quizId}/question")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     Mono<QuizResponseDto> addQuestion(@PathVariable UUID quizId, @Valid @RequestBody NewQuestionDto questionDto) {
         return Mono.just(quizApiMapper.map(quizService.addQuestionToQuiz(quizId, quizApiMapper.map(questionDto))));
+    }
+
+    @DeleteMapping("{quizId}/question/{questionId}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    Mono<QuizResponseDto> removeQuestion(@PathVariable UUID quizId, @PathVariable UUID questionId) {
+        return Mono.just(quizApiMapper.map(quizService.removeQuestionFromQuiz(quizId, questionId)));
     }
 
 }
