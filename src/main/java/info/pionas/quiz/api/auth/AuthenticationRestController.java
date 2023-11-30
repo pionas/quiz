@@ -2,6 +2,7 @@ package info.pionas.quiz.api.auth;
 
 import info.pionas.quiz.api.security.JWTUtil;
 import info.pionas.quiz.domain.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ class AuthenticationRestController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest ar) {
+    public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody AuthRequest ar) {
         return userService.findByUsername(ar.getUsername())
                 .filter(userDetails -> passwordEncoder.encode(ar.getPassword()).equals(userDetails.getPassword()))
                 .map(userDetails -> ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(userDetails))))

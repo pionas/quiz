@@ -1,10 +1,12 @@
 package info.pionas.quiz.api.security;
 
+import info.pionas.quiz.api.ApiConfiguration;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -14,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
 @AllArgsConstructor
 class EnableWebSecurity {
 
@@ -33,7 +36,7 @@ class EnableWebSecurity {
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        .pathMatchers("/login").permitAll()
+                        .pathMatchers(ApiConfiguration.API_CONTEXT + "/login").permitAll()
                         .anyExchange().authenticated())
                 .build();
     }
