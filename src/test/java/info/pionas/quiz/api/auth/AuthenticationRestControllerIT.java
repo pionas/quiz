@@ -1,5 +1,6 @@
 package info.pionas.quiz.api.auth;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import info.pionas.quiz.api.AbstractIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -48,8 +49,10 @@ class AuthenticationRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("username: must not be blank");
-        assertThat(errors.get(1).asText()).isEqualTo("password: must not be blank");
+        assertThat(errors)
+                .hasSize(2)
+                .extracting(JsonNode::asText)
+                .containsExactlyInAnyOrder("username: must not be blank", "password: must not be blank");
     }
 
     @Test
