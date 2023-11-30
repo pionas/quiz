@@ -35,7 +35,7 @@ class QuizRestControllerIT extends AbstractIT {
     @Test
     void should_create_quiz() {
         //given
-        final var user = new User("user", "user", List.of(Role.ROLE_USER));
+        final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
         final var newQuizDto = getNewQuizDto();
         //when
         final var response = webTestClient.post().uri("/api/v1/quiz")
@@ -56,6 +56,28 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(quizEntity).isNotNull();
         assertThat(quizEntity.getTitle()).isEqualTo(newQuizDto.getTitle());
         assertThat(quizEntity.getDescription()).isEqualTo(newQuizDto.getDescription());
+    }
+
+    @Test
+    void should_throw_forbidden_when_try_to_create_quiz() throws IOException {
+        //given
+        final var user = new User("user", "user", List.of(Role.ROLE_USER));
+        final var newQuizDto = getNewQuizDto();
+        //when
+        final var response = webTestClient.post().uri("/api/v1/quiz")
+                .body(BodyInserters.fromValue(newQuizDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        final var errors = StreamSupport
+                .stream(errorJson.get("errors").spliterator(), false)
+                .toList();
+        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
     }
 
     @Test
