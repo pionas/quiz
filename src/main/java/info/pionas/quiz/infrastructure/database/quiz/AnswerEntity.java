@@ -18,6 +18,7 @@ public class AnswerEntity {
     private UUID id;
 
     private String content;
+    private Boolean correct;
 
     @ManyToOne
     @JoinColumn(name = "question_id")

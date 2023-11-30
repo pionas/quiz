@@ -1,5 +1,6 @@
 package info.pionas.quiz.api;
 
+import info.pionas.quiz.domain.shared.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,25 +32,36 @@ class RestErrorHandler {
         List<String> errors = ((BindingResult) ex).getFieldErrors().stream()
                 .map(RestErrorHandler::getFieldErrorMessage)
                 .toList();
-        return ResponseEntity.badRequest().body(getErrorsMap(errors));
+        return ResponseEntity.badRequest()
+                .body(getErrorsMap(errors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.error(ex.getMessage(), ex);
-        return ResponseEntity.badRequest().body(getErrorsMap(List.of("Required request body is missing")));
+        return ResponseEntity.badRequest()
+                .body(getErrorsMap(List.of("Required request body is missing")));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
         log.error(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(getErrorsMap(List.of(ex.getMessage())));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(getErrorsMap(List.of(ex.getMessage())));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> handleAccessDeniedException(NotFoundException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(getErrorsMap(List.of(ex.getMessage())));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
+    public ResponseEntity<?> handleException(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(getErrorsMap(List.of(ex.getMessage())));
     }
 
     private Map<String, List<String>> getErrorsMap(List<String> errors) {

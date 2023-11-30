@@ -46,5 +46,8 @@ databaseChangeLog:
                   name: content
                   type: VARCHAR(255)
               - column:
+                  name: correct
+                  type: BOOLEAN
+              - column:
                   name: question_id
                   type: UUID

@@ -49,8 +49,12 @@ public class TestDbUtil {
 
 
     private List<String> getListOfTables() {
-        final var query = "SELECT table_name FROM INFORMATION_SCHEMA.tables";
-        return entityManager.createNativeQuery(query).getResultList();
+        @SuppressWarnings("unchecked")
+        final var rows = (List<String>) entityManager.createNativeQuery("SELECT table_name FROM INFORMATION_SCHEMA.tables", String.class).getResultList();
+        return rows
+                .stream()
+                .map(String::toLowerCase)
+                .toList();
     }
 
     private void truncateTable(List<String> tables, String tableName) {
