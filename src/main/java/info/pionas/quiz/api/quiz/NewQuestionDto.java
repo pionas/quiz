@@ -9,16 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Setter
 @Getter
-@Builder
+@Setter
 class NewQuestionDto {
 
     @NotBlank
     @Size(min = 3, max = 500)
     private String content;
     @Valid
-    @Builder.Default
     private List<NewAnswerDto> answers = new ArrayList<>();
 }

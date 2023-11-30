@@ -12,7 +12,7 @@ interface QuizApiMapper {
 
     NewAnswer map(NewAnswerDto newAnswerDto);
 
-    QuizDto map(Quiz quiz);
+    QuizResponseDto map(Quiz quiz);
 
     QuestionDto map(Question question);
 

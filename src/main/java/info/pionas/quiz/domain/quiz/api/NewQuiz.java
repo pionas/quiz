@@ -1,10 +1,12 @@
 package info.pionas.quiz.domain.quiz.api;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Data
+@Getter
+@RequiredArgsConstructor
 public class NewQuiz {
 
     private final String title;

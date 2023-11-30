@@ -1,11 +1,11 @@
 package info.pionas.quiz.domain.quiz.api;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.UUID;
 
-@Data
+@Getter
 @Builder
 public class Answer {
 

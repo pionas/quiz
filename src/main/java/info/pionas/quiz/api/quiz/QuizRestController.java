@@ -17,7 +17,7 @@ class QuizRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    Mono<QuizDto> create(@Valid @RequestBody NewQuizDto quizDto) {
+    Mono<QuizResponseDto> create(@Valid @RequestBody NewQuizDto quizDto) {
         return Mono.just(quizApiMapper.map(quizService.createQuiz(quizApiMapper.map(quizDto))));
     }
 

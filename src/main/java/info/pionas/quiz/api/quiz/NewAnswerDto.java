@@ -6,10 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Setter
 @Getter
-@Builder
+@Setter
 class NewAnswerDto {
 
     @NotBlank

@@ -1,8 +1,10 @@
 package info.pionas.quiz.domain.quiz.api;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Data
+@Getter
+@RequiredArgsConstructor
 public class NewAnswer {
 
     private final String content;

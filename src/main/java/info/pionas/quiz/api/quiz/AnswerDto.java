@@ -1,10 +1,14 @@
 package info.pionas.quiz.api.quiz;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 class AnswerDto {
 
     private UUID id;

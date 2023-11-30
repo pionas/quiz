@@ -1,4 +1,4 @@
-package info.pionas.quiz.api.quiz;
+ package info.pionas.quiz.api.quiz;
 
 import info.pionas.quiz.api.AbstractIT;
 import info.pionas.quiz.domain.user.api.Role;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QuizRestControllerIT extends AbstractIT {
 
     @Test
-    void should_throw_unauthorized_when_try_to_create_quiz_by_quest() throws IOException {
+    void should_throw_unauthorized_when_try_to_create_quiz_by_quest() {
         //given
         //when
         final var response = webTestClient.post().uri("/api/v1/quiz")
@@ -43,16 +43,16 @@ class QuizRestControllerIT extends AbstractIT {
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
                 .exchange()
-                .returnResult(QuizDto.class);
+                .returnResult(QuizResponseDto.class);
         //then
-        QuizDto quizDto = response.getResponseBody().blockLast();
+        QuizResponseDto quizResponseDto = response.getResponseBody().blockLast();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
-        assertThat(quizDto).isNotNull();
-        assertThat(quizDto.getTitle()).isEqualTo(newQuizDto.getTitle());
-        assertThat(quizDto.getDescription()).isEqualTo(newQuizDto.getDescription());
-        List<QuestionDto> questions = quizDto.getQuestions();
+        assertThat(quizResponseDto).isNotNull();
+        assertThat(quizResponseDto.getTitle()).isEqualTo(newQuizDto.getTitle());
+        assertThat(quizResponseDto.getDescription()).isEqualTo(newQuizDto.getDescription());
+        List<QuestionDto> questions = quizResponseDto.getQuestions();
         assertThat(questions).hasSize(2);
-        final var quizEntity = dbUtil.em().find(QuizEntity.class, quizDto.getId());
+        final var quizEntity = dbUtil.em().find(QuizEntity.class, quizResponseDto.getId());
         assertThat(quizEntity).isNotNull();
         assertThat(quizEntity.getTitle()).isEqualTo(newQuizDto.getTitle());
         assertThat(quizEntity.getDescription()).isEqualTo(newQuizDto.getDescription());
@@ -62,7 +62,7 @@ class QuizRestControllerIT extends AbstractIT {
     void should_throw_bad_request_when_try_to_create_quiz() throws IOException {
         //given
         final var user = new User("user", "user", List.of(Role.ROLE_USER));
-        final var newQuizDto = NewQuizDto.builder().build();
+        final var newQuizDto = new NewQuizDto();
         //when
         final var response = webTestClient.post().uri("/api/v1/quiz")
                 .body(BodyInserters.fromValue(newQuizDto))
@@ -81,24 +81,24 @@ class QuizRestControllerIT extends AbstractIT {
     }
 
     private NewQuizDto getNewQuizDto() {
-        return NewQuizDto.builder()
-                .title("Title")
-                .description("Description")
-                .questions(List.of(createQuestion("Spring is the best JAVA framework"), createQuestion("Do you like me?")))
-                .build();
+        final var newQuizDto = new NewQuizDto();
+        newQuizDto.setTitle("Title");
+        newQuizDto.setDescription("Description");
+        newQuizDto.setQuestions(List.of(createQuestion("Spring is the best JAVA framework"), createQuestion("Do you like me?")));
+        return newQuizDto;
     }
 
     private NewQuestionDto createQuestion(String content) {
-        return NewQuestionDto.builder()
-                .content(content)
-                .answers(List.of(createAnswer("yes", true), createAnswer("no", false)))
-                .build();
+        final var newQuestionDto = new NewQuestionDto();
+        newQuestionDto.setContent(content);
+        newQuestionDto.setAnswers(List.of(createAnswer("yes", true), createAnswer("no", false)));
+        return newQuestionDto;
     }
 
     private NewAnswerDto createAnswer(String content, boolean correct) {
-        return NewAnswerDto.builder()
-                .content(content)
-                .correct(correct)
-                .build();
+        final var newAnswerDto = new NewAnswerDto();
+        newAnswerDto.setContent(content);
+        newAnswerDto.setCorrect(correct);
+        return newAnswerDto;
     }
 }
