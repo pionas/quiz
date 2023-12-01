@@ -76,7 +76,7 @@ jobs:
           name: artifact
           path: |
             build/libs/quiz-${{ env.APP_VERSION }}.jar
-            src/master/resources/application.yaml
+            src/main/resources/application.yaml
   deploy:
     if: ${{ github.event_name == 'push' }}
     needs: generate-jar
