@@ -44,8 +44,8 @@ jobs:
           token: ${{ secrets.TOKEN }}
       - name: Read Application Config
         run: |
-          echo "APP_NAME=$(yq eval '.info.app.name' ./src/master/resources/application.yaml)" >> $GITHUB_ENV
-          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/master/resources/application.yaml)" >> $GITHUB_ENV
+          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.11.0
         with:
@@ -93,7 +93,7 @@ jobs:
           name: artifact
       - name: Read Application Config
         run: |
-          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/master/resources/application.yaml)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
       - name: Copy jar file to project root dir
         run: cp ./build/libs/quiz-${{ env.APP_VERSION }}.jar ./quiz-${{ env.APP_VERSION }}.jar
       - name: Deploy file via ssh password
