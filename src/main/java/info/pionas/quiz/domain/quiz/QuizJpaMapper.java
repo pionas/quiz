@@ -7,6 +7,7 @@ import info.pionas.quiz.infrastructure.database.quiz.AnswerEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuestionEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuizEntity;
 import org.mapstruct.Mapper;
+ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 interface QuizJpaMapper {
@@ -17,9 +18,11 @@ interface QuizJpaMapper {
 
     Question map(QuestionEntity questionEntity);
 
+    @Mapping(target = "quiz", ignore = true)
     QuestionEntity map(Question question);
 
     Answer map(AnswerEntity answerEntity);
 
-    QuizEntity map(Answer answer);
+    @Mapping(target = "questionEntity", ignore = true)
+    AnswerEntity map(Answer answer);
 }
