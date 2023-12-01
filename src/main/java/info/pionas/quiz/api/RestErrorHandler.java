@@ -4,7 +4,6 @@ import info.pionas.quiz.domain.shared.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -34,13 +33,6 @@ class RestErrorHandler {
                 .toList();
         return ResponseEntity.badRequest()
                 .body(getErrorsMap(errors));
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.error(ex.getMessage(), ex);
-        return ResponseEntity.badRequest()
-                .body(getErrorsMap(List.of("Required request body is missing")));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
