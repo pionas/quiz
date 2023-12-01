@@ -3,6 +3,7 @@ package info.pionas.quiz.api.quiz;
 import info.pionas.quiz.api.AbstractIT;
 import info.pionas.quiz.domain.user.api.Role;
 import info.pionas.quiz.domain.user.api.User;
+import info.pionas.quiz.infrastructure.database.quiz.QuestionEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuizEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -202,7 +204,7 @@ class QuizRestControllerIT extends AbstractIT {
     }
 
     @Test
-    void should_throw_not_found_when_quiz_by_id_not_exist() throws IOException {
+    void should_throw_not_found_when_try_add_question_but_quiz_by_id_not_exist() throws IOException {
         //given
         final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
         final var newQuestionDto = createQuestion("Spring is the best JAVA framework");
@@ -299,6 +301,130 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(errors.get(0).asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
     }
 
+    @Test
+    void should_throw_unauthorized_when_try_to_update_question_to_quiz_by_quest() {
+        //given
+        //when
+        final var response = webTestClient.patch().uri("/api/v1/quiz/f57342a1-8413-4d45-8465-6b41b8d72d3e/question")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getResponseBodyContent()).isEmpty();
+    }
+
+    @Test
+    @Sql({"/db/quiz.sql", "/db/question.sql"})
+    void should_update_question_from_quiz() {
+        //given
+        final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
+        final var questionId = UUID.fromString("ce703f5b-274c-4398-b855-d461887c7ed5");
+        final var updateQuestionDto = createUpdateQuestionDto(questionId, "Spring is the best JAVA framework");
+        //when
+        final var response = webTestClient.patch().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
+                .body(BodyInserters.fromValue(updateQuestionDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(QuizResponseDto.class);
+        //then
+        QuizResponseDto quizResponseDto = response.getResponseBody().blockLast();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
+        assertThat(quizResponseDto).isNotNull();
+        assertThat(quizResponseDto.getTitle()).isEqualTo("First question");
+        assertThat(quizResponseDto.getDescription()).isEqualTo("This is first question without answers");
+        final var questions = quizResponseDto.getQuestions();
+        assertThat(questions).hasSize(1);
+        final var questionDto = questions.get(0);
+        assertThat(questionDto).isNotNull();
+        assertThat(questionDto.getContent()).isEqualTo(updateQuestionDto.getContent());
+        final var answers = questionDto.getAnswers();
+        assertThat(answers).hasSize(2);
+        AnswerDto answerDto1 = answers.get(0);
+        assertThat(answerDto1).isNotNull();
+        assertThat(answerDto1.getContent()).isEqualTo(updateQuestionDto.getAnswers().get(0).getContent());
+        assertThat(answerDto1.getCorrect()).isEqualTo(updateQuestionDto.getAnswers().get(0).getCorrect());
+        AnswerDto answerDto2 = answers.get(1);
+        assertThat(answerDto2).isNotNull();
+        assertThat(answerDto2.getContent()).isEqualTo(updateQuestionDto.getAnswers().get(1).getContent());
+        assertThat(answerDto2.getCorrect()).isEqualTo(updateQuestionDto.getAnswers().get(1).getCorrect());
+        final var questionEntity = dbUtil.em().find(QuestionEntity.class, questionId);
+        assertThat(questionEntity).isNotNull();
+        assertThat(questionEntity.getContent()).isEqualTo(updateQuestionDto.getContent());
+    }
+
+    @Test
+    void should_throw_forbidden_when_try_to_update_question_to_quiz() throws IOException {
+        //given
+        final var user = new User("user", "user", List.of(Role.ROLE_USER));
+        final var questionId = UUID.fromString("ce703f5b-274c-4398-b855-d461887c7ed5");
+        final var updateQuestionDto = createUpdateQuestionDto(questionId, "Spring is the best JAVA framework");
+        //when
+        final var response = webTestClient.patch().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
+                .body(BodyInserters.fromValue(updateQuestionDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        final var errors = StreamSupport
+                .stream(errorJson.get("errors").spliterator(), false)
+                .toList();
+        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
+    }
+
+    @Test
+    @Sql({"/db/quiz.sql", "/db/question.sql"})
+    void should_throw_bad_request_when_try_to_update_question_to_quiz() throws IOException {
+        //given
+        final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
+        final var questionId = UUID.fromString("ce703f5b-274c-4398-b855-d461887c7ed5");
+        final var updateQuestionDto = createUpdateQuestionDto(questionId, null);
+        //when
+        final var response = webTestClient.patch().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
+                .body(BodyInserters.fromValue(updateQuestionDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        final var errors = StreamSupport
+                .stream(errorJson.get("errors").spliterator(), false)
+                .toList();
+        assertThat(errors.get(0).asText()).isEqualTo("content: must not be blank");
+    }
+
+    @Test
+    void should_throw_not_found_when_quiz_by_id_not_exist() throws IOException {
+        //given
+        final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
+        final var questionId = UUID.fromString("ce703f5b-274c-4398-b855-d461887c7ed5");
+        final var updateQuestionDto = createUpdateQuestionDto(questionId, "Spring is the best JAVA framework");
+        //when
+        final var response = webTestClient.patch().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
+                .body(BodyInserters.fromValue(updateQuestionDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        final var errors = StreamSupport
+                .stream(errorJson.get("errors").spliterator(), false)
+                .toList();
+        assertThat(errors.get(0).asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
+    }
+
     private NewQuizDto getNewQuizDto() {
         final var newQuizDto = new NewQuizDto();
         newQuizDto.setTitle("Title");
@@ -319,5 +445,23 @@ class QuizRestControllerIT extends AbstractIT {
         newAnswerDto.setContent(content);
         newAnswerDto.setCorrect(correct);
         return newAnswerDto;
+    }
+
+    private UpdateQuestionDto createUpdateQuestionDto(UUID questionId, String content) {
+        final var newAnswerId1 = UUID.fromString("9f46a57f-acbb-4e76-9db8-69c8c5a08a10");
+        final var newAnswerId2 = UUID.fromString("a9f950f8-c12f-4c22-83a4-0a4758fbad0a");
+        final var updateQuestionDto = new UpdateQuestionDto();
+        updateQuestionDto.setId(questionId);
+        updateQuestionDto.setContent(content);
+        updateQuestionDto.setAnswers(List.of(createUpdateAnswerDto(newAnswerId1, "New answer 1", false), createUpdateAnswerDto(newAnswerId2, "New answer 2", true)));
+        return updateQuestionDto;
+    }
+
+    private UpdateAnswerDto createUpdateAnswerDto(UUID id, String content, boolean correct) {
+        final var updateAnswerDto = new UpdateAnswerDto();
+        updateAnswerDto.setId(id);
+        updateAnswerDto.setContent(content);
+        updateAnswerDto.setCorrect(correct);
+        return updateAnswerDto;
     }
 }

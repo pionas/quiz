@@ -1,13 +1,12 @@
 package info.pionas.quiz.domain.quiz;
 
-import info.pionas.quiz.domain.quiz.api.NewQuestion;
-import info.pionas.quiz.domain.quiz.api.NewQuiz;
-import info.pionas.quiz.domain.quiz.api.Quiz;
+import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,6 +39,17 @@ class QuizServiceImpl implements QuizService {
         return quizRepository.findById(quizId)
                 .map(quiz -> {
                     quiz.removeQuestion(questionId);
+                    return quiz;
+                }).map(quizRepository::save)
+                .orElseThrow(() -> new QuizNotFoundException(quizId));
+    }
+
+    @Override
+    @Transactional
+    public Quiz updateQuestionFromQuiz(UUID quizId, UpdateQuestion question) {
+        return quizRepository.findById(quizId)
+                .map(quiz -> {
+                    quiz.updateQuestion(question.getId(), question.getContent(), mapper.mapToAnswers(question.getAnswers(), uuidGenerator));
                     return quiz;
                 }).map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));

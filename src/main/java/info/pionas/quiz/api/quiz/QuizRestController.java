@@ -39,4 +39,11 @@ class QuizRestController {
         return Mono.just(quizApiMapper.map(quizService.removeQuestionFromQuiz(quizId, questionId)));
     }
 
+    @PatchMapping("{quizId}/question")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    Mono<QuizResponseDto> updateQuestion(@PathVariable UUID quizId, @Valid @RequestBody UpdateQuestionDto updateQuestionDto) {
+        return Mono.just(quizApiMapper.map(quizService.updateQuestionFromQuiz(quizId, quizApiMapper.map(updateQuestionDto))));
+    }
+
 }

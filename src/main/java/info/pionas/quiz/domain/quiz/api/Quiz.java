@@ -1,9 +1,7 @@
 package info.pionas.quiz.domain.quiz.api;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,12 @@ public class Quiz {
 
     public void removeQuestion(UUID questionId) {
         questions.removeIf(question -> isEquals(questionId, question));
+    }
+
+    public void updateQuestion(UUID questionId, String content, List<Answer> answers) {
+        questions.stream()
+                .filter(question -> isEquals(questionId, question))
+                .forEach(question -> question.update(content, answers));
     }
 
     private static boolean isEquals(UUID questionId, Question question) {

@@ -8,11 +8,10 @@ import java.util.UUID;
 
 @Getter
 @Builder
-public class Answer {
+public class UpdateAnswer {
 
     @Setter
     private UUID id;
     private String content;
     private boolean correct;
-
 }
