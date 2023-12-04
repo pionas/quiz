@@ -1,30 +1,30 @@
 package info.pionas.quiz.domain.user;
 
-import info.pionas.quiz.domain.user.api.Role;
+import info.pionas.quiz.domain.user.api.NewUser;
 import info.pionas.quiz.domain.user.api.User;
-import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 class UserServiceImpl implements UserService {
 
-    private Map<String, User> data;
+    private final UserRepository userRepository;
+    private final UserValidator userValidator;
+    private final PasswordEncoder passwordEncoder;
 
-    @PostConstruct
-    public void init() {
-        data = new HashMap<>();
-        //username:passwowrd -> user:user
-        data.put("user", new User("user", "cBrlgyL2GI2GINuLUUwgojITuIufFycpLG4490dhGtY=", List.of(Role.ROLE_USER)));
-        //username:passwowrd -> admin:admin
-        data.put("admin", new User("admin", "dQNjUIMorJb8Ubj2+wVGYp6eAeYkdekqAcnYp+aRq5w=", List.of(Role.ROLE_ADMIN)));
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.get(username);
     }
 
-    public Mono<User> findByUsername(String username) {
-        return Mono.justOrEmpty(data.get(username));
+    @Override
+    public User addUser(NewUser user) {
+        userValidator.validate(user);
+        final var password = passwordEncoder.encode(user.getPassword());
+        return userRepository.save(new User(user.getUsername(), password, user.getRoles()));
     }
 }

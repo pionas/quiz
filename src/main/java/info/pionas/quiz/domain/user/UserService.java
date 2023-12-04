@@ -1,9 +1,13 @@
 package info.pionas.quiz.domain.user;
 
+import info.pionas.quiz.domain.user.api.NewUser;
 import info.pionas.quiz.domain.user.api.User;
-import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 public interface UserService {
 
-    Mono<User> findByUsername(String username);
+    Optional<User> findByUsername(String username);
+
+    User addUser(NewUser user);
 }
