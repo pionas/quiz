@@ -20,8 +20,8 @@ class UserServiceTest {
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final UserValidator userValidator = new UserValidator(List.of(new UsernameValidationRule(userRepository), new UserPasswordMatchedValidationRule()));
-    private final UserService service = new UserServiceImpl(userRepository, userValidator, passwordEncoder);
     private final PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
+    private final UserService service = new UserServiceImpl(userRepository, userValidator, passwordEncoder);
 
     @Test
     void should_create_user() {

@@ -7,7 +7,7 @@ import info.pionas.quiz.infrastructure.database.quiz.AnswerEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuestionEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuizEntity;
 import org.mapstruct.Mapper;
- import org.mapstruct.Mapping;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 interface QuizJpaMapper {

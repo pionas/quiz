@@ -32,7 +32,7 @@ public class Quiz {
                 .forEach(question -> question.update(content, answers));
     }
 
-    private static boolean isEquals(UUID questionId, Question question) {
+    private boolean isEquals(UUID questionId, Question question) {
         return Objects.equals(question.getId(), questionId);
     }
 }

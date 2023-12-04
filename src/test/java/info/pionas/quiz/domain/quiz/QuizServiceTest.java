@@ -232,7 +232,7 @@ class QuizServiceTest {
                 .isEqualTo(String.format("Quiz by ID %s not exist", quizId));
     }
 
-    private static Quiz getQuiz(UUID quizId) {
+    private Quiz getQuiz(UUID quizId) {
         return Quiz.builder()
                 .id(quizId)
                 .title("Title")
