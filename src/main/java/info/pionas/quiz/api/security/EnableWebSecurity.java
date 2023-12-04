@@ -37,6 +37,7 @@ class EnableWebSecurity {
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .pathMatchers(ApiConfiguration.API_CONTEXT + "/login").permitAll()
+                        .pathMatchers(ApiConfiguration.API_CONTEXT + "/register").permitAll()
                         .anyExchange().authenticated())
                 .build();
     }
