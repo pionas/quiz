@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 interface QuizApiMapper {
 
-    NewQuiz map(NewQuizDto newQuizDto);
+    NewQuiz map(String username, NewQuizDto newQuizDto);
 
     NewQuestion map(NewQuestionDto newQuestionDto);
 

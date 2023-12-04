@@ -2,6 +2,7 @@ package info.pionas.quiz.domain.quiz;
 
 import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
+import info.pionas.quiz.domain.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,15 +13,18 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 class QuizServiceTest {
 
     private final QuizRepository quizRepository = Mockito.mock(QuizRepository.class);
     private final UuidGenerator uuidGenerator = Mockito.mock(UuidGenerator.class);
+    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final QuizMapper quizMapper = new QuizMapperImpl();
+    private final QuizValidator quizValidator = new QuizValidator(List.of(new QuizUserValidationRule(userRepository)));
 
-    private final QuizService service = new QuizServiceImpl(quizRepository, uuidGenerator, quizMapper);
+    private final QuizService service = new QuizServiceImpl(quizRepository, uuidGenerator, quizMapper, quizValidator);
 
     @BeforeEach
     void setUp() {
@@ -35,7 +39,8 @@ class QuizServiceTest {
         final var answer1Id = UUID.fromString("d7e876ae-364d-403e-b537-7bcb2c2841fa");
         final var answer2Id = UUID.fromString("45d074e4-7c03-4c8b-9f8a-23ba1e367bce");
         when(uuidGenerator.generate()).thenReturn(answer1Id, answer2Id, questionId, quizId);
-        final var newQuiz = new NewQuiz("Title", "Description", List.of(new NewQuestion("Spring is the best JAVA framework", List.of(new NewAnswer("Yes", true), new NewAnswer("No", false)))));
+        when(userRepository.existByUsername(anyString())).thenReturn(true);
+        final var newQuiz = new NewQuiz("username", "Title", "Description", List.of(new NewQuestion("Spring is the best JAVA framework", List.of(new NewAnswer("Yes", true), new NewAnswer("No", false)))));
         //when
         final var quiz = service.createQuiz(newQuiz);
         //then

@@ -18,6 +18,7 @@ public class QuizEntity {
     private UUID id;
     private String title;
     private String description;
+    private String username;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<QuestionEntity> questions;

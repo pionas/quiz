@@ -18,9 +18,11 @@ class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final UuidGenerator uuidGenerator;
     private final QuizMapper mapper;
+    private final QuizValidator quizValidator;
 
     @Override
     public Quiz createQuiz(NewQuiz quiz) {
+        quizValidator.validate(quiz);
         return quizRepository.save(mapper.mapToQuiz(quiz, uuidGenerator));
     }
 

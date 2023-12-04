@@ -9,6 +9,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NewQuiz {
 
+    private final String username;
     private final String title;
     private final String description;
     private final List<NewQuestion> questions;

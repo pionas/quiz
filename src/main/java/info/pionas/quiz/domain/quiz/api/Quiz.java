@@ -15,6 +15,7 @@ public class Quiz {
     private final UUID id;
     private final String title;
     private final String description;
+    private final String username;
     @Builder.Default
     private final List<Question> questions = new ArrayList<>();
 
