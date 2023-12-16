@@ -1,6 +1,4 @@
-package info.pionas.quiz.domain.quiz;
-
-import info.pionas.quiz.domain.quiz.api.Quiz;
+package info.pionas.quiz.domain.quiz.api;
 
 import java.util.Optional;
 import java.util.UUID;

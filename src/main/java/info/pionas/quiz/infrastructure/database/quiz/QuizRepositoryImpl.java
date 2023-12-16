@@ -1,6 +1,7 @@
-package info.pionas.quiz.domain.quiz;
+package info.pionas.quiz.infrastructure.database.quiz;
 
 import info.pionas.quiz.domain.quiz.api.Quiz;
+import info.pionas.quiz.domain.quiz.api.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

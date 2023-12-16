@@ -14,9 +14,9 @@ interface QuizApiMapper {
 
     QuizResponseDto map(Quiz quiz);
 
-    QuestionDto map(Question question);
+    QuestionResponseDto map(Question question);
 
-    AnswerDto map(Answer answer);
+    AnswerResponseDto map(Answer answer);
 
     UpdateQuestion map(UpdateQuestionDto updateQuestionDto);
 

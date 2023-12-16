@@ -16,5 +16,5 @@ class QuizResponseDto {
     private UUID id;
     private String title;
     private String description;
-    private List<QuestionDto> questions = new ArrayList<>();
+    private List<QuestionResponseDto> questions = new ArrayList<>();
 }

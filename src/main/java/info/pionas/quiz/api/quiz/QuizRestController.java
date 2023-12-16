@@ -1,6 +1,6 @@
 package info.pionas.quiz.api.quiz;
 
-import info.pionas.quiz.domain.quiz.QuizService;
+import info.pionas.quiz.domain.quiz.api.QuizService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

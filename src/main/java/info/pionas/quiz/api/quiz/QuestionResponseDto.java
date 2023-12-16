@@ -10,9 +10,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-class QuestionDto {
+class QuestionResponseDto {
 
     private UUID id;
     private String content;
-    private List<AnswerDto> answers;
+    private List<AnswerResponseDto> answers;
 }

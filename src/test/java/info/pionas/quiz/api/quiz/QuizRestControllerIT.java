@@ -53,7 +53,7 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(quizResponseDto).isNotNull();
         assertThat(quizResponseDto.getTitle()).isEqualTo(newQuizDto.getTitle());
         assertThat(quizResponseDto.getDescription()).isEqualTo(newQuizDto.getDescription());
-        List<QuestionDto> questions = quizResponseDto.getQuestions();
+        List<QuestionResponseDto> questions = quizResponseDto.getQuestions();
         assertThat(questions).hasSize(2);
         final var quizEntity = dbUtil.em().find(QuizEntity.class, quizResponseDto.getId());
         assertThat(quizEntity).isNotNull();
@@ -80,7 +80,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -102,7 +102,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("title: must not be blank");
+        assertThat(errors.getFirst().asText()).isEqualTo("title: must not be blank");
     }
 
     @Test
@@ -139,19 +139,19 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(quizResponseDto.getDescription()).isEqualTo("This is first question without answers");
         final var questions = quizResponseDto.getQuestions();
         assertThat(questions).hasSize(1);
-        final var questionDto = questions.get(0);
+        final var questionDto = questions.getFirst();
         assertThat(questionDto).isNotNull();
         assertThat(questionDto.getContent()).isEqualTo(newQuestionDto.getContent());
         final var answers = questionDto.getAnswers();
         assertThat(answers).hasSize(2);
-        AnswerDto answerDto1 = answers.get(0);
-        assertThat(answerDto1).isNotNull();
-        assertThat(answerDto1.getContent()).isEqualTo(newQuestionDto.getAnswers().get(0).getContent());
-        assertThat(answerDto1.getCorrect()).isEqualTo(newQuestionDto.getAnswers().get(0).getCorrect());
-        AnswerDto answerDto2 = answers.get(1);
-        assertThat(answerDto2).isNotNull();
-        assertThat(answerDto2.getContent()).isEqualTo(newQuestionDto.getAnswers().get(1).getContent());
-        assertThat(answerDto2.getCorrect()).isEqualTo(newQuestionDto.getAnswers().get(1).getCorrect());
+        AnswerResponseDto answerResponseDto1 = answers.getFirst();
+        assertThat(answerResponseDto1).isNotNull();
+        assertThat(answerResponseDto1.getContent()).isEqualTo(newQuestionDto.getAnswers().getFirst().getContent());
+        assertThat(answerResponseDto1.getCorrect()).isEqualTo(newQuestionDto.getAnswers().getFirst().getCorrect());
+        AnswerResponseDto answerResponseDto2 = answers.get(1);
+        assertThat(answerResponseDto2).isNotNull();
+        assertThat(answerResponseDto2.getContent()).isEqualTo(newQuestionDto.getAnswers().get(1).getContent());
+        assertThat(answerResponseDto2.getCorrect()).isEqualTo(newQuestionDto.getAnswers().get(1).getCorrect());
         final var quizEntity = dbUtil.em().find(QuizEntity.class, quizResponseDto.getId());
         assertThat(quizEntity).isNotNull();
         assertThat(quizEntity.getTitle()).isEqualTo("First question");
@@ -178,7 +178,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -200,7 +200,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("content: must not be blank");
+        assertThat(errors.getFirst().asText()).isEqualTo("content: must not be blank");
     }
 
     @Test
@@ -222,7 +222,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
+        assertThat(errors.getFirst().asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
     }
 
     @Test
@@ -277,7 +277,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -286,7 +286,6 @@ class QuizRestControllerIT extends AbstractIT {
         final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
         //when
         final var response = webTestClient.delete().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question/ce703f5b-274c-4398-b855-d461887c7ed5")
-                .accept(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
                 .exchange()
@@ -298,7 +297,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
+        assertThat(errors.getFirst().asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
     }
 
     @Test
@@ -336,19 +335,19 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(quizResponseDto.getDescription()).isEqualTo("This is first question without answers");
         final var questions = quizResponseDto.getQuestions();
         assertThat(questions).hasSize(1);
-        final var questionDto = questions.get(0);
+        final var questionDto = questions.getFirst();
         assertThat(questionDto).isNotNull();
         assertThat(questionDto.getContent()).isEqualTo(updateQuestionDto.getContent());
         final var answers = questionDto.getAnswers();
         assertThat(answers).hasSize(2);
-        AnswerDto answerDto1 = answers.get(0);
-        assertThat(answerDto1).isNotNull();
-        assertThat(answerDto1.getContent()).isEqualTo(updateQuestionDto.getAnswers().get(0).getContent());
-        assertThat(answerDto1.getCorrect()).isEqualTo(updateQuestionDto.getAnswers().get(0).getCorrect());
-        AnswerDto answerDto2 = answers.get(1);
-        assertThat(answerDto2).isNotNull();
-        assertThat(answerDto2.getContent()).isEqualTo(updateQuestionDto.getAnswers().get(1).getContent());
-        assertThat(answerDto2.getCorrect()).isEqualTo(updateQuestionDto.getAnswers().get(1).getCorrect());
+        AnswerResponseDto answerResponseDto1 = answers.getFirst();
+        assertThat(answerResponseDto1).isNotNull();
+        assertThat(answerResponseDto1.getContent()).isEqualTo(updateQuestionDto.getAnswers().getFirst().getContent());
+        assertThat(answerResponseDto1.getCorrect()).isEqualTo(updateQuestionDto.getAnswers().getFirst().getCorrect());
+        AnswerResponseDto answerResponseDto2 = answers.get(1);
+        assertThat(answerResponseDto2).isNotNull();
+        assertThat(answerResponseDto2.getContent()).isEqualTo(updateQuestionDto.getAnswers().get(1).getContent());
+        assertThat(answerResponseDto2.getCorrect()).isEqualTo(updateQuestionDto.getAnswers().get(1).getCorrect());
         final var questionEntity = dbUtil.em().find(QuestionEntity.class, questionId);
         assertThat(questionEntity).isNotNull();
         assertThat(questionEntity.getContent()).isEqualTo(updateQuestionDto.getContent());
@@ -375,7 +374,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -399,7 +398,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("content: must not be blank");
+        assertThat(errors.getFirst().asText()).isEqualTo("content: must not be blank");
     }
 
     @Test
@@ -422,7 +421,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.get(0).asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
+        assertThat(errors.getFirst().asText()).isEqualTo("Quiz by ID b4a63897-60f7-4e94-846e-e199d8734144 not exist");
     }
 
     private NewQuizDto getNewQuizDto() {

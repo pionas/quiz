@@ -1,9 +1,6 @@
 package info.pionas.quiz.domain.quiz;
 
-import info.pionas.quiz.domain.quiz.api.NewQuestion;
-import info.pionas.quiz.domain.quiz.api.NewQuiz;
-import info.pionas.quiz.domain.quiz.api.Quiz;
-import info.pionas.quiz.domain.quiz.api.UpdateQuestion;
+import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
