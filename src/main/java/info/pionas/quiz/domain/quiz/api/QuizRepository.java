@@ -7,5 +7,7 @@ public interface QuizRepository {
 
     Quiz save(Quiz quiz);
 
-    Optional<Quiz> findById(UUID uuid);
+    Optional<Quiz> findById(UUID id);
+
+    boolean existById(UUID id);
 }

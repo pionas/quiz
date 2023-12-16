@@ -21,8 +21,13 @@ class QuizRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public Optional<Quiz> findById(UUID uuid) {
-        return quizJpaRepository.findById(uuid)
+    public Optional<Quiz> findById(UUID id) {
+        return quizJpaRepository.findById(id)
                 .map(quizJpaMapper::map);
+    }
+
+    @Override
+    public boolean existById(UUID id) {
+        return quizJpaRepository.existsById(id);
     }
 }

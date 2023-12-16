@@ -4,5 +4,7 @@ import java.util.UUID;
 
 public interface ExamRepository {
 
-    ExamResult save(UUID id, ExamDetails examDetails);
+    void save(NewExamDetails newExamDetails);
+
+    ExamResult getById(UUID id);
 }

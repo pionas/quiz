@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Builder
 @Getter
@@ -15,4 +16,8 @@ public class ExamDetails {
     private String username;
     private Quiz quiz;
     private List<ExamAnswer> answers;
+
+    public UUID getQuizId() {
+        return quiz.getId();
+    }
 }

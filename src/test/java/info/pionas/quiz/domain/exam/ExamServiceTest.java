@@ -2,10 +2,8 @@ package info.pionas.quiz.domain.exam;
 
 import info.pionas.quiz.domain.exam.api.*;
 import info.pionas.quiz.domain.quiz.QuizNotFoundException;
-import info.pionas.quiz.domain.quiz.api.Answer;
-import info.pionas.quiz.domain.quiz.api.Question;
-import info.pionas.quiz.domain.quiz.api.Quiz;
-import info.pionas.quiz.domain.quiz.api.QuizRepository;
+import info.pionas.quiz.domain.quiz.api.*;
+import info.pionas.quiz.domain.shared.DateTimeProvider;
 import info.pionas.quiz.domain.shared.UuidGenerator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,28 +12,33 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 class ExamServiceTest {
 
     private final QuizRepository quizRepository = Mockito.mock(QuizRepository.class);
     private final ExamRepository examRepository = Mockito.mock(ExamRepository.class);
+    private final ExamAnswerRepository examAnswerRepository = Mockito.mock(ExamAnswerRepository.class);
+    private final QuizAnswerRepository quizAnswerRepository = Mockito.mock(QuizAnswerRepository.class);
     private final UuidGenerator uuidGenerator = Mockito.mock(UuidGenerator.class);
-    private final ExamFactory examFactory = new ExamFactory();
-    private final ExamService service = new ExamServiceImpl(quizRepository, examRepository, examFactory, uuidGenerator);
+    private final DateTimeProvider dateTimeProvider = Mockito.mock(DateTimeProvider.class);
+    private final EndExamValidator endExamValidator = new EndExamValidator(List.of(new EndExamQuizExistValidationRule(quizRepository), new EndExamAnswerForAllQuestionValidationRule(quizRepository)));
+    private final ExamService service = new ExamServiceImpl(examRepository, examAnswerRepository, quizAnswerRepository, endExamValidator, uuidGenerator, dateTimeProvider);
 
     @Test
     void should_throw_not_found_exception_when_quiz_by_id_not_exist() {
         //given
         final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
         final var answers = Collections.<PassExamAnswer>emptyList();
-        when(quizRepository.findById(quizId)).thenReturn(Optional.empty());
+        when(quizRepository.existById(quizId)).thenReturn(false);
         //when
         QuizNotFoundException exception = assertThrows(QuizNotFoundException.class, () -> service.endExam("username", quizId, answers));
         //then
         assertThat(exception).isNotNull();
         assertThat(exception.getMessage())
                 .isEqualTo(String.format("Quiz by ID %s not exist", quizId));
+        Mockito.verify(quizRepository, times(0)).findById(quizId);
     }
 
     @Test
@@ -43,6 +46,7 @@ class ExamServiceTest {
         //given
         final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
         final var answers = Collections.<PassExamAnswer>emptyList();
+        when(quizRepository.existById(quizId)).thenReturn(true);
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(getQuiz(quizId)));
         //when
         AnswerForQuestionNotFoundException exception = assertThrows(AnswerForQuestionNotFoundException.class, () -> service.endExam("username", quizId, answers));
@@ -58,15 +62,18 @@ class ExamServiceTest {
         final var examResultId = UUID.fromString("7a398eb6-1d20-4a05-b13b-c752c3c7c5d3");
         final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
         final var answers = getAnswers();
+        when(quizRepository.existById(quizId)).thenReturn(true);
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(getQuiz(quizId)));
-        when(examRepository.save(Mockito.any(UUID.class), Mockito.any(ExamDetails.class))).thenReturn(createExamResult(examResultId, getQuiz(quizId), answers));
         when(uuidGenerator.generate()).thenReturn(examResultId);
+        when(examRepository.getById(examResultId)).thenReturn(createExamResult(examResultId, getQuiz(quizId), answers));
         //when
         ExamResult examResult = service.endExam("username", quizId, answers);
         //then
         assertThat(examResult).isNotNull();
         assertThat(examResult.getId()).isEqualTo(examResultId);
         assertThat(examResult.getCorrectAnswer()).isEqualTo(1L);
+        Mockito.verify(examRepository, times(1)).save(Mockito.any());
+        Mockito.verify(examAnswerRepository, times(1)).saveAll(Mockito.any());
     }
 
     private Quiz getQuiz(UUID quizId) {
