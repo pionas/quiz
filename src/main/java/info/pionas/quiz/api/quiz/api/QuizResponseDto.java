@@ -1,4 +1,4 @@
-package info.pionas.quiz.api.quiz;
+package info.pionas.quiz.api.quiz.api;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-class QuizResponseDto {
+public class QuizResponseDto {
 
     private UUID id;
     private String title;

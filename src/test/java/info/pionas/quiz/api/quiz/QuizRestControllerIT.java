@@ -1,6 +1,9 @@
 package info.pionas.quiz.api.quiz;
 
 import info.pionas.quiz.api.AbstractIT;
+import info.pionas.quiz.api.quiz.api.AnswerResponseDto;
+import info.pionas.quiz.api.quiz.api.QuestionResponseDto;
+import info.pionas.quiz.api.quiz.api.QuizResponseDto;
 import info.pionas.quiz.domain.user.api.Role;
 import info.pionas.quiz.domain.user.api.User;
 import info.pionas.quiz.infrastructure.database.quiz.QuestionEntity;

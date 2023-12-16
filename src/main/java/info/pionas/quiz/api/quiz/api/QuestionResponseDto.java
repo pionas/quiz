@@ -1,17 +1,18 @@
-package info.pionas.quiz.api.quiz;
+package info.pionas.quiz.api.quiz.api;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
 @Setter
-class AnswerResponseDto {
+public class QuestionResponseDto {
 
     private UUID id;
     private String content;
-    private Boolean correct;
+    private List<AnswerResponseDto> answers;
 }
