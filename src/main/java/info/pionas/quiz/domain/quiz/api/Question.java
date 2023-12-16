@@ -1,5 +1,6 @@
 package info.pionas.quiz.domain.quiz.api;
 
+import info.pionas.quiz.domain.exam.api.PassExamAnswer;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,5 +21,11 @@ public class Question {
         this.content = content;
         this.answers.clear();
         this.answers.addAll(updateAnswers);
+    }
+
+    public boolean isCorrectAnswer(PassExamAnswer passExamAnswer) {
+        return answers.stream()
+                .filter(answer -> answer.isAnswerFor(passExamAnswer.getAnswerId()))
+                .allMatch(Answer::isCorrect);
     }
 }

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -15,4 +16,7 @@ public class Answer {
     private String content;
     private boolean correct;
 
+    public boolean isAnswerFor(UUID answerId) {
+        return Objects.equals(id, answerId);
+    }
 }
