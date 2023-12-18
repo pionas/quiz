@@ -6,6 +6,7 @@ import info.pionas.quiz.api.quiz.api.QuestionResponseDto;
 import info.pionas.quiz.api.quiz.api.QuizResponseDto;
 import info.pionas.quiz.domain.user.api.Role;
 import info.pionas.quiz.domain.user.api.User;
+import info.pionas.quiz.infrastructure.database.quiz.AnswerEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuestionEntity;
 import info.pionas.quiz.infrastructure.database.quiz.QuizEntity;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.BodyInserters;
 
@@ -39,6 +41,7 @@ class QuizRestControllerIT extends AbstractIT {
     }
 
     @Test
+    @Transactional
     void should_create_quiz() {
         //given
         final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
@@ -62,6 +65,28 @@ class QuizRestControllerIT extends AbstractIT {
         assertThat(quizEntity).isNotNull();
         assertThat(quizEntity.getTitle()).isEqualTo(newQuizDto.getTitle());
         assertThat(quizEntity.getDescription()).isEqualTo(newQuizDto.getDescription());
+        List<QuestionEntity> quizEntityQuestions = quizEntity.getQuestions();
+        assertThat(quizEntityQuestions).hasSize(2);
+        QuestionEntity questionEntity1 = quizEntityQuestions.getFirst();
+        assertThat(questionEntity1).isNotNull();
+        List<AnswerEntity> answersEntity1 = questionEntity1.getAnswers();
+        assertThat(answersEntity1).hasSize(2);
+        AnswerEntity answerEntity1 = answersEntity1.getFirst();
+        assertThat(answerEntity1).isNotNull();
+        assertThat(answerEntity1.getCorrect()).isTrue();
+        AnswerEntity answerEntity2 = answersEntity1.getLast();
+        assertThat(answerEntity2).isNotNull();
+        assertThat(answerEntity2.getCorrect()).isFalse();
+        QuestionEntity questionEntity2 = quizEntityQuestions.getLast();
+        assertThat(questionEntity2).isNotNull();
+        List<AnswerEntity> answersEntity2 = questionEntity2.getAnswers();
+        assertThat(answersEntity2).hasSize(2);
+        AnswerEntity answerEntity3 = answersEntity2.getFirst();
+        assertThat(answerEntity3).isNotNull();
+        assertThat(answerEntity3.getCorrect()).isTrue();
+        AnswerEntity answerEntity4 = answersEntity2.getLast();
+        assertThat(answerEntity4).isNotNull();
+        assertThat(answerEntity4.getCorrect()).isFalse();
     }
 
     @Test
