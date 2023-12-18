@@ -16,16 +16,6 @@ public class NewExamAnswer {
     private Boolean correct;
     private LocalDateTime created;
 
-    public static NewExamAnswer of(UUID resultId, ExamAnswer answer, LocalDateTime localDateTime) {
-        return NewExamAnswer.builder()
-                .resultId(resultId)
-                .questionId(answer.getQuestionId())
-                .answerId(answer.getAnswerId())
-                .correct(answer.getCorrect())
-                .created(localDateTime)
-                .build();
-    }
-
     public static NewExamAnswer correct(UUID resultId, LocalDateTime dateTime, UUID questionId, UUID answerId) {
         return NewExamAnswer.builder()
                 .resultId(resultId)

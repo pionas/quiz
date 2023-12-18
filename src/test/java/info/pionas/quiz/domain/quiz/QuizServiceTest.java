@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.*;
 
@@ -235,6 +236,24 @@ class QuizServiceTest {
         assertThat(exception).isNotNull();
         assertThat(exception.getMessage())
                 .isEqualTo(String.format("Quiz by ID %s not exist", quizId));
+    }
+
+    @Test
+    void should_throw_username_not_found_exception() {
+        //given
+        final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
+        final var questionId = UUID.fromString("435aeee2-5a1f-4723-9359-1137ed820ae7");
+        final var answer1Id = UUID.fromString("d7e876ae-364d-403e-b537-7bcb2c2841fa");
+        final var answer2Id = UUID.fromString("45d074e4-7c03-4c8b-9f8a-23ba1e367bce");
+        when(uuidGenerator.generate()).thenReturn(answer1Id, answer2Id, questionId, quizId);
+        when(userRepository.existByUsername(anyString())).thenReturn(false);
+        final var newQuiz = new NewQuiz("username", "Title", "Description", List.of(new NewQuestion("Spring is the best JAVA framework", List.of(new NewAnswer("Yes", true), new NewAnswer("No", false)))));
+        //when
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> service.createQuiz(newQuiz));
+        //then
+        assertThat(exception).isNotNull();
+        assertThat(exception.getMessage())
+                .isEqualTo("User username not exist");
     }
 
     private Quiz getQuiz(UUID quizId) {

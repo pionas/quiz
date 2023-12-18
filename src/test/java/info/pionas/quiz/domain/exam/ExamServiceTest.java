@@ -12,6 +12,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -64,6 +65,7 @@ class ExamServiceTest {
         final var answers = getAnswers();
         when(quizRepository.existById(quizId)).thenReturn(true);
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(getQuiz(quizId)));
+        when(quizAnswerRepository.isCorrectAnswer(any(), any())).thenReturn(true, false);
         when(uuidGenerator.generate()).thenReturn(examResultId);
         when(examRepository.getById(examResultId)).thenReturn(Optional.of(createExamResult(examResultId, getQuiz(quizId), answers)));
         //when
