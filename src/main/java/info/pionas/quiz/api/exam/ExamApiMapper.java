@@ -14,4 +14,6 @@ interface ExamApiMapper {
     ExamResponseDto map(ExamResult examResult);
 
     List<PassExamAnswer> map(List<NewExamAnswerDto> answers);
+
+    List<ExamResponseDto> mapToDto(List<ExamResult> userExams);
 }

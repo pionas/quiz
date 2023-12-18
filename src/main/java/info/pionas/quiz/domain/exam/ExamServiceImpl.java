@@ -37,10 +37,16 @@ class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public ExamResult getExamDetails(UUID id) {
         return examRepository.getById(id)
                 .orElseThrow(() -> new ExamResultNotFoundException(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExamResult> getUserExams(String username) {
+        return examRepository.getUserExams(username);
     }
 
     private NewExamDetails getNewExamDetails(UUID resultId, UUID quizId, String username, LocalDateTime dateTime) {

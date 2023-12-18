@@ -5,6 +5,8 @@ import info.pionas.quiz.domain.exam.api.NewExamDetails;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 interface ExamJpaMapper {
 
@@ -15,5 +17,7 @@ interface ExamJpaMapper {
     @Mapping(target = "created", source = "created")
     ExamEntity map(NewExamDetails newExamDetails);
 
-    ExamResult map(ExamResultReadModel examEntity);
+    ExamResult map(ExamResultReadModel examResultReadModel);
+
+    List<ExamResult> map(List<ExamResultReadModel> examResultReadModels);
 }

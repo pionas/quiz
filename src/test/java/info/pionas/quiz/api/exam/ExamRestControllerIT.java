@@ -79,11 +79,6 @@ class ExamRestControllerIT extends AbstractIT {
                 .exchange()
                 .returnResult(ExamResponseDto.class);
         //then
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         ExamResponseDto examResponseDto = response.getResponseBody().blockLast();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
         assertThat(examResponseDto).isNotNull();
@@ -120,6 +115,33 @@ class ExamRestControllerIT extends AbstractIT {
                 .hasSize(1)
                 .extracting(JsonNode::asText)
                 .containsExactlyInAnyOrder("There is no answer to the question ce703f5b-274c-4398-b855-d461887c7ed5");
+    }
+
+    @Test
+    @Sql({"/db/quiz.sql", "/db/question.sql", "/db/answer.sql", "/db/exam_result.sql"})
+    void should_return_user_exam_list() {
+        //given
+        final var user = new User("admin", "admin", Collections.emptyList());
+        //when
+        final var response = webTestClient
+                .get().uri("/api/v1/exam")
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
+                .exchange();
+        //then
+        response.expectStatus().isOk()
+                .expectHeader().contentType("text/event-stream;charset=UTF-8")
+                .expectBodyList(ExamResponseDto.class)
+                .consumeWith(listEntityExchangeResult -> {
+                    List<ExamResponseDto> examResponseDtos = listEntityExchangeResult.getResponseBody();
+                    assertThat(examResponseDtos).hasSize(2);
+                    ExamResponseDto examResponseDto1 = examResponseDtos.getFirst();
+                    assertThat(examResponseDto1).isNotNull();
+                    assertThat(examResponseDto1.getId()).isEqualTo(UUID.fromString("a375ca97-33f9-4251-aaa0-f9d95b55003f"));
+                    ExamResponseDto examResponseDto2 = examResponseDtos.getLast();
+                    assertThat(examResponseDto2).isNotNull();
+                    assertThat(examResponseDto2.getId()).isEqualTo(UUID.fromString("b8acee24-edaf-4725-876c-c37ec4512a8c"));
+                });
     }
 
     private NewExamDto getNewExamDto() {

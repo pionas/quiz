@@ -6,6 +6,7 @@ import info.pionas.quiz.domain.exam.api.NewExamDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,5 +27,10 @@ class ExamRepositoryImpl implements ExamRepository {
     public Optional<ExamResult> getById(UUID id) {
         return examResultJpaRepository.findById(id)
                 .map(examJpaMapper::map);
+    }
+
+    @Override
+    public List<ExamResult> getUserExams(String username) {
+        return examJpaMapper.map(examResultJpaRepository.findAllByUsername(username));
     }
 }

@@ -78,18 +78,27 @@ databaseChangeLog:
               - column:
                   name: result_id
                   type: UUID
+                  constraints:
+                    nullable: false
               - column:
                   name: question_id
                   type: UUID
+                  constraints:
+                    nullable: false
               - column:
                   name: answer_id
                   type: UUID
-              - column:
-                  name: username
-                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: correct
                   type: BOOLEAN
+                  constraints:
+                    nullable: false
               - column:
                   name: created
                   type: DATETIME
+        - addPrimaryKey:
+            columnNames: result_id, question_id, answer_id
+            constraintName: pk_quiz_exam_answer
+            tableName: quiz_exam_answers

@@ -112,6 +112,23 @@ class ExamServiceTest {
                 .isEqualTo("Exam result by ID 7a398eb6-1d20-4a05-b13b-c752c3c7c5d3 not exist");
     }
 
+    @Test
+    void should_return_exam_list_for_user() {
+        //given
+        final var examResultId = UUID.fromString("7a398eb6-1d20-4a05-b13b-c752c3c7c5d3");
+        final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
+        final var answers = getAnswers();
+        final var quiz = getQuiz(quizId);
+        when(examRepository.getUserExams("username")).thenReturn(List.of(createExamResult(examResultId, quiz, answers)));
+        //when
+        final var examResults = service.getUserExams("username");
+        //then
+        assertThat(examResults).hasSize(1);
+        ExamResult examResult = examResults.getFirst();
+        assertThat(examResult.getUsername()).isEqualTo("username");
+        assertThat(examResult.getCorrectAnswer()).isEqualTo(1);
+    }
+
     private Quiz getQuiz(UUID quizId) {
         final var questionId1 = UUID.fromString("03df4c0e-a760-4b23-aebe-ac0fd8761804");
         final var questionId2 = UUID.fromString("0feb6e91-a25c-4c9a-8f6c-acf489a5af6b");
