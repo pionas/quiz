@@ -14,7 +14,6 @@ import java.util.UUID;
 public class QuestionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String content;

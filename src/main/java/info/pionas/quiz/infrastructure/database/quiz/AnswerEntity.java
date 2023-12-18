@@ -12,9 +12,7 @@ import java.util.UUID;
 @Table(name = "quiz_answers")
 public class AnswerEntity {
 
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String content;

@@ -14,7 +14,6 @@ import java.util.UUID;
 public class QuizEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String title;
     private String description;
