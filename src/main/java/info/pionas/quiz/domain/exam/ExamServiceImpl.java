@@ -61,11 +61,9 @@ class ExamServiceImpl implements ExamService {
     }
 
     private NewExamAnswer prepareNewExamAnswer(UUID resultId, PassExamAnswer answer, LocalDateTime dateTime) {
-        if (quizAnswerRepository.isCorrectAnswer(answer.getQuestionId(), answer.getAnswerId())) {
-            return NewExamAnswer.correct(resultId, dateTime, answer.getQuestionId(), answer.getAnswerId());
-        } else {
-            return NewExamAnswer.wrong(resultId, dateTime, answer.getQuestionId(), answer.getAnswerId());
-        }
+        final var correctAnswer = quizAnswerRepository.isCorrectAnswer(answer.getQuestionId(), answer.getAnswerId());
+        return new NewExamAnswer(resultId, answer.getQuestionId(), answer.getAnswerId(), correctAnswer, dateTime);
+
     }
 
 }
