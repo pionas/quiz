@@ -54,3 +54,42 @@ databaseChangeLog:
               - column:
                   name: question_id
                   type: UUID
+        - createTable:
+            tableName: quiz_exams
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: quiz_id
+                  type: UUID
+              - column:
+                  name: created
+                  type: DATETIME
+        - createTable:
+            tableName: quiz_exam_answers
+            columns:
+              - column:
+                  name: result_id
+                  type: UUID
+              - column:
+                  name: question_id
+                  type: UUID
+              - column:
+                  name: answer_id
+                  type: UUID
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  name: correct
+                  type: BOOLEAN
+              - column:
+                  name: created
+                  type: DATETIME

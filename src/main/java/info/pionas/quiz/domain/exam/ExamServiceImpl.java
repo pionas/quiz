@@ -4,9 +4,9 @@ import info.pionas.quiz.domain.exam.api.*;
 import info.pionas.quiz.domain.quiz.api.QuizAnswerRepository;
 import info.pionas.quiz.domain.shared.DateTimeProvider;
 import info.pionas.quiz.domain.shared.UuidGenerator;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,14 +27,20 @@ class ExamServiceImpl implements ExamService {
 
     @Override
     @Transactional
-    public ExamResult endExam(String username, UUID quizId, List<PassExamAnswer> answers) {
+    public UUID endExam(String username, UUID quizId, List<PassExamAnswer> answers) {
         endExamValidator.validate(quizId, answers);
         final var resultId = uuidGenerator.generate();
         final var dateTime = dateTimeProvider.now();
-
         examRepository.save(getNewExamDetails(resultId, quizId, username, dateTime));
         examAnswerRepository.saveAll(getExamAnswers(resultId, answers, dateTime));
-        return examRepository.getById(resultId);
+        return resultId;
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public ExamResult getExamDetails(UUID id) {
+        return examRepository.getById(id)
+                .orElseThrow(() -> new ExamResultNotFoundException(id));
     }
 
     private NewExamDetails getNewExamDetails(UUID resultId, UUID quizId, String username, LocalDateTime dateTime) {

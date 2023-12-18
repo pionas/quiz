@@ -5,5 +5,7 @@ import java.util.UUID;
 
 public interface ExamService {
 
-    ExamResult endExam(String username, UUID uuid, List<PassExamAnswer> answers);
+    UUID endExam(String username, UUID uuid, List<PassExamAnswer> answers);
+
+    ExamResult getExamDetails(UUID examId);
 }

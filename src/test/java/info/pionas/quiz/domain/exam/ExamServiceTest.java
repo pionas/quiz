@@ -65,15 +65,49 @@ class ExamServiceTest {
         when(quizRepository.existById(quizId)).thenReturn(true);
         when(quizRepository.findById(quizId)).thenReturn(Optional.of(getQuiz(quizId)));
         when(uuidGenerator.generate()).thenReturn(examResultId);
-        when(examRepository.getById(examResultId)).thenReturn(createExamResult(examResultId, getQuiz(quizId), answers));
+        when(examRepository.getById(examResultId)).thenReturn(Optional.of(createExamResult(examResultId, getQuiz(quizId), answers)));
         //when
-        ExamResult examResult = service.endExam("username", quizId, answers);
+        final var examResult = service.endExam("username", quizId, answers);
+        //then
+        assertThat(examResult).isNotNull();
+        assertThat(examResult).isEqualTo(examResultId);
+        Mockito.verify(examRepository, times(1)).save(Mockito.any());
+        Mockito.verify(examAnswerRepository, times(1)).saveAll(Mockito.any());
+    }
+
+    @Test
+    void should_return_exam_by_id() {
+        //given
+        final var examResultId = UUID.fromString("7a398eb6-1d20-4a05-b13b-c752c3c7c5d3");
+        final var quizId = UUID.fromString("b83d5c22-7b78-4435-9daa-17bb532c0f63");
+        final var answers = getAnswers();
+        final var quiz = getQuiz(quizId);
+        when(examRepository.getById(examResultId)).thenReturn(Optional.of(createExamResult(examResultId, quiz, answers)));
+        //when
+        final var examResult = service.getExamDetails(examResultId);
         //then
         assertThat(examResult).isNotNull();
         assertThat(examResult.getId()).isEqualTo(examResultId);
-        assertThat(examResult.getCorrectAnswer()).isEqualTo(1L);
-        Mockito.verify(examRepository, times(1)).save(Mockito.any());
-        Mockito.verify(examAnswerRepository, times(1)).saveAll(Mockito.any());
+        assertThat(examResult.getUsername()).isEqualTo("username");
+        assertThat(examResult.getCorrectAnswer()).isEqualTo(1);
+        final var quizResult = examResult.getQuiz();
+        assertThat(quizResult).isNotNull();
+        assertThat(quizResult.getId()).isEqualTo(quiz.getId());
+        assertThat(quizResult.getDescription()).isEqualTo(quiz.getDescription());
+        assertThat(quizResult.getQuestions()).isEqualTo(quiz.getQuestions());
+    }
+
+    @Test
+    void should_throw_exam_not_found_exception_when_exam_by_id_not_exist() {
+        //given
+        final var examResultId = UUID.fromString("7a398eb6-1d20-4a05-b13b-c752c3c7c5d3");
+        when(examRepository.getById(examResultId)).thenReturn(Optional.empty());
+        //when
+        ExamResultNotFoundException exception = assertThrows(ExamResultNotFoundException.class, () -> service.getExamDetails(examResultId));
+        //then
+        assertThat(exception).isNotNull();
+        assertThat(exception.getMessage())
+                .isEqualTo("Exam result by ID 7a398eb6-1d20-4a05-b13b-c752c3c7c5d3 not exist");
     }
 
     private Quiz getQuiz(UUID quizId) {
@@ -136,6 +170,7 @@ class ExamServiceTest {
         final var questions = quiz.getQuestions();
         return ExamResult.builder()
                 .id(examResultId)
+                .username("username")
                 .quiz(quiz)
                 .answers(List.of(
                         crateExamAnswer(questions.getFirst(), answers.getFirst()),

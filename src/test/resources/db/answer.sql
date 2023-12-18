@@ -1,0 +1,2 @@
+INSERT INTO quiz_answers (id, content, correct, question_id) VALUES ('ce703f5b-274c-4398-b855-d461887c7ed5', 'Answer 1',true,'ce703f5b-274c-4398-b855-d461887c7ed5');
+INSERT INTO quiz_answers (id, content, correct, question_id) VALUES ('02fd8360-14ce-4b50-a0f1-f8d2ce1ed3e9', 'Answer 2',false,'ce703f5b-274c-4398-b855-d461887c7ed5');
