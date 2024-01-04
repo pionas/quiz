@@ -3,6 +3,7 @@ package info.pionas.quiz.api;
 import info.pionas.quiz.domain.shared.exception.NotFoundException;
 import info.pionas.quiz.domain.user.api.UserFoundException;
 import info.pionas.quiz.domain.user.api.UserPasswordNotMatchedException;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,6 +73,13 @@ class RestErrorHandler {
     public ResponseEntity<?> handleException(Exception ex) {
         log.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(getErrorsMap(List.of(ex.getMessage())));
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredJwtException(ExpiredJwtException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(getErrorsMap(List.of(ex.getMessage())));
     }
 
