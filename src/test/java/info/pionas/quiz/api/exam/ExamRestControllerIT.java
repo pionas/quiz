@@ -82,7 +82,8 @@ class ExamRestControllerIT extends AbstractIT {
         ExamResponseDto examResponseDto = response.getResponseBody().blockLast();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED);
         assertThat(examResponseDto).isNotNull();
-        assertThat(examResponseDto.getCorrectAnswer()).isEqualTo(0);
+        assertThat(examResponseDto.getCorrectAnswerCount()).isZero();
+        assertThat(examResponseDto.getCorrectAnswerPercentage()).isZero();
         assertThat(examResponseDto.getAnswers())
                 .hasSize(1)
                 .containsExactlyInAnyOrder(getExamAnswerResponseDto());
@@ -125,12 +126,11 @@ class ExamRestControllerIT extends AbstractIT {
         //when
         final var response = webTestClient
                 .get().uri("/api/v1/exam")
-                .accept(MediaType.TEXT_EVENT_STREAM)
+                .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
                 .exchange();
         //then
         response.expectStatus().isOk()
-                .expectHeader().contentType("text/event-stream;charset=UTF-8")
                 .expectBodyList(ExamResponseDto.class)
                 .consumeWith(listEntityExchangeResult -> {
                     List<ExamResponseDto> examResponseDtos = listEntityExchangeResult.getResponseBody();

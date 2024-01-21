@@ -4,8 +4,10 @@ import info.pionas.quiz.domain.quiz.api.*;
 import info.pionas.quiz.domain.shared.UuidGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,7 +32,8 @@ class QuizServiceImpl implements QuizService {
                 .map(quiz -> {
                     quiz.addQuestion(mapper.mapToQuestion(question, uuidGenerator));
                     return quiz;
-                }).map(quizRepository::save)
+                })
+                .map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));
     }
 
@@ -41,7 +44,8 @@ class QuizServiceImpl implements QuizService {
                 .map(quiz -> {
                     quiz.removeQuestion(questionId);
                     return quiz;
-                }).map(quizRepository::save)
+                })
+                .map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));
     }
 
@@ -52,8 +56,15 @@ class QuizServiceImpl implements QuizService {
                 .map(quiz -> {
                     quiz.updateQuestion(question.getId(), question.getContent(), mapper.mapToAnswers(question.getAnswers(), uuidGenerator));
                     return quiz;
-                }).map(quizRepository::save)
+                })
+                .map(quizRepository::save)
                 .orElseThrow(() -> new QuizNotFoundException(quizId));
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = Exception.class)
+    public List<Quiz> getLastAdded() {
+        return quizRepository.getLastAdded();
     }
 
 }

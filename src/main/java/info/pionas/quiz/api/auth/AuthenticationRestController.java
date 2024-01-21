@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping
@@ -22,17 +21,17 @@ class AuthenticationRestController {
     private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public Mono<AuthResponse> login(@Valid @RequestBody AuthRequest ar) {
-        return Mono.just(userService.findByUsername(ar.getUsername())
+    public AuthResponse login(@Valid @RequestBody AuthRequest ar) {
+        return userService.findByUsername(ar.getUsername())
                 .filter(userDetails -> passwordEncoder.encode(ar.getPassword()).equals(userDetails.getPassword()))
                 .map(userDetails -> new AuthResponse(jwtUtil.generateToken(userDetails)))
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not exist", ar.getUsername()))));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not exist", ar.getUsername())));
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<AuthResponse> register(@Valid @RequestBody NewUserRequest newUserRequest) {
+    public AuthResponse register(@Valid @RequestBody NewUserRequest newUserRequest) {
         User user = userService.addUser(userMapper.map(newUserRequest));
-        return Mono.just(new AuthResponse(jwtUtil.generateToken(user)));
+        return new AuthResponse(jwtUtil.generateToken(user));
     }
 }

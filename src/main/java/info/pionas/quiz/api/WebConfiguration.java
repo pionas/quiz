@@ -3,14 +3,14 @@ package info.pionas.quiz.api;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerTypePredicate;
-import org.springframework.web.reactive.config.PathMatchConfigurer;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration(proxyBeanMethods = false)
-class ApiWebFluxConfiguration implements WebFluxConfigurer {
+@Configuration
+class WebConfiguration implements WebMvcConfigurer {
 
     @Override
-    public void configurePathMatching(PathMatchConfigurer configurer) {
+    public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix(ApiConfiguration.API_CONTEXT, HandlerTypePredicate.forAnnotation(RestController.class));
     }
 }

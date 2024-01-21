@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface QuizAnswerRepository {
 
-    boolean isCorrectAnswer(UUID questionId, UUID answerId);
+    Boolean isCorrectAnswer(UUID questionId, UUID answerId);
 }

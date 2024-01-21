@@ -108,7 +108,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
     }
 
     @Test
@@ -206,7 +206,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
     }
 
     @Test
@@ -305,7 +305,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
     }
 
     @Test
@@ -402,7 +402,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
     }
 
     @Test

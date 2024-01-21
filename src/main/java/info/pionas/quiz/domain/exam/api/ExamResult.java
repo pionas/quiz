@@ -18,9 +18,19 @@ public class ExamResult {
     private List<ExamAnswer> answers;
     private LocalDateTime created;
 
-    public long getCorrectAnswer() {
+    public long getCorrectAnswerCount() {
         return answers.stream()
                 .filter(ExamAnswer::getCorrect)
                 .count();
+    }
+
+    public double getCorrectAnswerPercentage() {
+        long totalQuestions = quiz.getQuestions().size();
+        if (totalQuestions == 0) {
+            return 0.0; // Avoid division by zero
+        }
+
+        long correctAnswers = getCorrectAnswerCount();
+        return ((double) correctAnswers / totalQuestions) * 100;
     }
 }

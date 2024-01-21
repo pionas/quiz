@@ -17,7 +17,8 @@ class EndExamQuizExistValidationRule implements EndExamValidationRule {
 
     @Override
     public void validate(UUID quizId, List<PassExamAnswer> answers) {
-        if (!quizRepository.existById(quizId)) {
+        boolean exists = Boolean.TRUE.equals(quizRepository.existById(quizId));
+        if (!exists) {
             throw new QuizNotFoundException(quizId);
         }
     }

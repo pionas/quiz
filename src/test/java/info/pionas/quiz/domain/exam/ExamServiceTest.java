@@ -91,7 +91,9 @@ class ExamServiceTest {
         assertThat(examResult).isNotNull();
         assertThat(examResult.getId()).isEqualTo(examResultId);
         assertThat(examResult.getUsername()).isEqualTo("username");
-        assertThat(examResult.getCorrectAnswer()).isEqualTo(1);
+        assertThat(examResult.getAnswers().size()).isEqualTo(2);
+        assertThat(examResult.getCorrectAnswerCount()).isEqualTo(1);
+        assertThat(examResult.getCorrectAnswerPercentage()).isEqualTo(50);
         final var quizResult = examResult.getQuiz();
         assertThat(quizResult).isNotNull();
         assertThat(quizResult.getId()).isEqualTo(quiz.getId());
@@ -126,7 +128,8 @@ class ExamServiceTest {
         assertThat(examResults).hasSize(1);
         ExamResult examResult = examResults.getFirst();
         assertThat(examResult.getUsername()).isEqualTo("username");
-        assertThat(examResult.getCorrectAnswer()).isEqualTo(1);
+        assertThat(examResult.getCorrectAnswerCount()).isEqualTo(1);
+        assertThat(examResult.getCorrectAnswerPercentage()).isEqualTo(50);
     }
 
     private Quiz getQuiz(UUID quizId) {

@@ -18,5 +18,6 @@ public class ExamResponseDto {
     private QuizResponseDto quiz;
     private List<ExamAnswerResponseDto> answers;
     private LocalDateTime created;
-    private Long correctAnswer;
+    private Long correctAnswerCount;
+    private Long correctAnswerPercentage;
 }

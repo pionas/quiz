@@ -1,5 +1,6 @@
 package info.pionas.quiz.domain.quiz.api;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface QuizService {
@@ -11,4 +12,6 @@ public interface QuizService {
     Quiz removeQuestionFromQuiz(UUID quizId, UUID questionId);
 
     Quiz updateQuestionFromQuiz(UUID quizId, UpdateQuestion question);
+
+    List<Quiz> getLastAdded();
 }

@@ -13,7 +13,7 @@ class QuizAnswerRepositoryImpl implements QuizAnswerRepository {
     private final QuizAnswerJpaRepository quizAnswerJpaRepository;
 
     @Override
-    public boolean isCorrectAnswer(UUID questionId, UUID answerId) {
+    public Boolean isCorrectAnswer(UUID questionId, UUID answerId) {
         return quizAnswerJpaRepository.isCorrectAnswer(questionId, answerId);
     }
 }

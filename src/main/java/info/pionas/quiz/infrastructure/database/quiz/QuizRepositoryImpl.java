@@ -5,6 +5,7 @@ import info.pionas.quiz.domain.quiz.api.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,7 +28,15 @@ class QuizRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public boolean existById(UUID id) {
+    public Boolean existById(UUID id) {
         return quizJpaRepository.existsById(id);
+    }
+
+    @Override
+    public List<Quiz> getLastAdded() {
+        return quizJpaRepository.findFirst5ByOrderByIdDesc()
+                .stream()
+                .map(quizJpaMapper::map)
+                .toList();
     }
 }

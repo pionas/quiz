@@ -18,7 +18,8 @@ class ErrorHandlerRestControllerIT extends AbstractIT {
     @Test
     void should_throw_bad_request() {
         final var user = new User("admin", "admin", List.of(Role.ROLE_ADMIN));
-        final var response = webTestClient.post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
+        final var response = webTestClient
+                .post().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question")
                 .body(BodyInserters.fromValue(user))
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + generateToken(user))
