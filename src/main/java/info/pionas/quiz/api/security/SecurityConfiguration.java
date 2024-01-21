@@ -9,7 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,7 +28,7 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @AllArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 class SecurityConfiguration {
 
 
@@ -64,7 +64,7 @@ class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationManager customAuthenticationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AccessTokenPreAuthorizationFilter accessTokenPreAuthorizationFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeExchangeSpec ->
@@ -72,6 +72,7 @@ class SecurityConfiguration {
                                 .requestMatchers(ApiConfiguration.API_CONTEXT + "/login").permitAll()
                                 .requestMatchers(ApiConfiguration.API_CONTEXT + "/register").permitAll()
                                 .requestMatchers(ApiConfiguration.API_CONTEXT + "/**").authenticated()
+                                .requestMatchers("/**").permitAll()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -79,9 +80,8 @@ class SecurityConfiguration {
                     httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(getAuthenticationEntryPoint());
                     httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(getAccessDeniedHandler());
                 })
-//                .authenticationManager(customAuthenticationManager)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new AccessTokenPreAuthorizationFilter(customAuthenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(accessTokenPreAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();

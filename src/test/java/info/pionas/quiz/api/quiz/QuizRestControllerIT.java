@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QuizRestControllerIT extends AbstractIT {
 
     @Test
-    void should_throw_unauthorized_when_try_to_create_quiz_by_quest() {
+    void should_throw_unauthorized_when_try_to_create_quiz_by_quest() throws IOException {
         //given
         //when
         final var response = webTestClient.post().uri("/api/v1/quiz")
@@ -37,7 +37,11 @@ class QuizRestControllerIT extends AbstractIT {
                 .returnResult(HttpClientErrorException.class);
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getResponseBodyContent()).isEmpty();
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        String error = errorJson.get("error").textValue();
+        assertThat(error).isNotNull();
+        assertThat(error).isEqualTo("Unauthorized");
     }
 
     @Test
@@ -108,7 +112,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -134,7 +138,7 @@ class QuizRestControllerIT extends AbstractIT {
     }
 
     @Test
-    void should_throw_unauthorized_when_try_to_add_question_to_quiz_by_quest() {
+    void should_throw_unauthorized_when_try_to_add_question_to_quiz_by_quest() throws IOException {
         //given
         //when
         final var response = webTestClient.post().uri("/api/v1/quiz/f57342a1-8413-4d45-8465-6b41b8d72d3e/question")
@@ -143,7 +147,11 @@ class QuizRestControllerIT extends AbstractIT {
                 .returnResult(HttpClientErrorException.class);
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getResponseBodyContent()).isEmpty();
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        String error = errorJson.get("error").textValue();
+        assertThat(error).isNotNull();
+        assertThat(error).isEqualTo("Unauthorized");
     }
 
     @Test
@@ -206,7 +214,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -254,7 +262,7 @@ class QuizRestControllerIT extends AbstractIT {
     }
 
     @Test
-    void should_throw_unauthorized_when_try_to_delete_question_from_quiz_by_quest() {
+    void should_throw_unauthorized_when_try_to_delete_question_from_quiz_by_quest() throws IOException {
         //given
         //when
         final var response = webTestClient.delete().uri("/api/v1/quiz/b4a63897-60f7-4e94-846e-e199d8734144/question/ce703f5b-274c-4398-b855-d461887c7ed5")
@@ -263,7 +271,11 @@ class QuizRestControllerIT extends AbstractIT {
                 .returnResult(HttpClientErrorException.class);
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getResponseBodyContent()).isEmpty();
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        String error = errorJson.get("error").textValue();
+        assertThat(error).isNotNull();
+        assertThat(error).isEqualTo("Unauthorized");
     }
 
     @Test
@@ -305,7 +317,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -329,7 +341,7 @@ class QuizRestControllerIT extends AbstractIT {
     }
 
     @Test
-    void should_throw_unauthorized_when_try_to_update_question_to_quiz_by_quest() {
+    void should_throw_unauthorized_when_try_to_update_question_to_quiz_by_quest() throws IOException {
         //given
         //when
         final var response = webTestClient.patch().uri("/api/v1/quiz/f57342a1-8413-4d45-8465-6b41b8d72d3e/question")
@@ -338,7 +350,11 @@ class QuizRestControllerIT extends AbstractIT {
                 .returnResult(HttpClientErrorException.class);
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getResponseBodyContent()).isEmpty();
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        String error = errorJson.get("error").textValue();
+        assertThat(error).isNotNull();
+        assertThat(error).isEqualTo("Unauthorized");
     }
 
     @Test
@@ -402,7 +418,7 @@ class QuizRestControllerIT extends AbstractIT {
         final var errors = StreamSupport
                 .stream(errorJson.get("errors").spliterator(), false)
                 .toList();
-        assertThat(errors.getFirst().asText()).isEqualTo("Access is denied");
+        assertThat(errors.getFirst().asText()).isEqualTo("Access Denied");
     }
 
     @Test

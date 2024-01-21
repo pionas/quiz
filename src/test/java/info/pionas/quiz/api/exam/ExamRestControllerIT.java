@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -27,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExamRestControllerIT extends AbstractIT {
 
     @Test
-    void should_throw_unauthorized_when_try_to_end_exam_by_quest() {
+    void should_throw_unauthorized_when_try_to_end_exam_by_quest() throws IOException {
         //given
         //when
         final var response = webTestClient.post().uri("/api/v1/exam")
@@ -36,7 +37,28 @@ class ExamRestControllerIT extends AbstractIT {
                 .returnResult(HttpClientErrorException.class);
         //then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getResponseBodyContent()).isEmpty();
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        String error = errorJson.get("error").textValue();
+        assertThat(error).isNotNull();
+        assertThat(error).isEqualTo("Unauthorized");
+    }
+
+    @Test
+    void should_throw_unauthorized_when_try_to_get_exams_by_quest() throws IOException {
+        //given
+        //when
+        final var response = webTestClient.get().uri("/api/v1/exam")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .returnResult(HttpClientErrorException.class);
+        //then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getResponseBodyContent()).isNotNull();
+        final var errorJson = objectMapper.readTree(response.getResponseBodyContent());
+        String error = errorJson.get("error").textValue();
+        assertThat(error).isNotNull();
+        assertThat(error).isEqualTo("Unauthorized");
     }
 
     @Test
